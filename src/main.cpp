@@ -443,7 +443,7 @@ public:
     }
 };
 
-class $modify(MyRateStarsLayerMod, RateStarsLayer) {
+class $modify(MyRateStarsLayerVisualMod, RateStarsLayer) {
     bool init(int stars) {
         if (!RateStarsLayer::init(stars))
             return false;
