@@ -9,5 +9,5 @@ What the mod includes:
 - RobTop's Noclip Mode (Coming Soon)
 - RobTop's Speedhack (Coming Soon)
 
-Not Every RobTop things (Even on the video) will be in the mod. Mod access are included in this mode (Fake and cosmetic too)
+Not Every RobTop things (Even on the video) will be in the mod. Mod access are included in this mod. (Fake and cosmetic too)
 The Video where RobTop showcased his powers: https://www.youtube.com/watch?v=_wmWuymEZDs
