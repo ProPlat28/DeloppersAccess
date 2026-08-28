@@ -219,6 +219,7 @@ auto popup = new SetFeaturedPopup();
 
 };
 
+
 class $modify(SFLevelInfoLayer, LevelInfoLayer) {
     struct Fields {
         GJGameLevel* level = nullptr;
@@ -230,51 +231,52 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         m_fields->level = level;
 
-        auto leftMenu = getChildByID("left-side-menu");
+        auto starSprite = CCSprite::create(
+            "sf_star_icon.png"_spr
+        );
 
-        if (!leftMenu)
+        if (!starSprite)
             return true;
 
-        if (leftMenu->getChildByID("set-featured-button"))
-            return true;
+        starSprite->setScale(0.6f);
 
-        auto sprite = CCSprite::create("sf_star_icon.png"_spr);
-
-        if (!sprite)
-            return true;
-
-        sprite->setScale(0.6f);
-
-        auto button = CCMenuItemSpriteExtra::create(
-            sprite,
+        auto starButton = CCMenuItemSpriteExtra::create(
+            starSprite,
             this,
             menu_selector(SFLevelInfoLayer::onSetFeatured)
         );
 
-        if (!button)
+        if (!starButton)
             return true;
 
-        button->setID("set-featured-button");
+        starButton->setID("set-featured-button");
 
-        leftMenu->addChild(button);
+        auto leftMenu = getChildByID("left-side-menu");
 
-        button->setPosition({
-            0.f,
-            -50.f
-        });
+        if (leftMenu) {
+            if (leftMenu->getChildByID("set-featured-button"))
+                return true;
 
-        button->setLayoutOptions(nullptr);
+            leftMenu->addChild(starButton);
+
+            starButton->setPosition({
+                0.f,
+                -50.f
+            });
+
+            starButton->setLayoutOptions(nullptr);
+        }
 
         return true;
     }
 
     void onSetFeatured(CCObject*) {
-        auto level = m_fields->level;
-
-        if (!level)
+        if (!m_fields->level)
             return;
 
-        auto popup = SetFeaturedPopup::create(level);
+        auto popup = SetFeaturedPopup::create(
+            m_fields->level
+        );
 
         if (popup)
             popup->show();
