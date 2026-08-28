@@ -256,8 +256,29 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         button->setID("set-featured-button");
 
+        CCNode* lastButton = nullptr;
+
+        auto children = leftMenu->getChildren();
+
+        if (children && children->count() > 0) {
+            lastButton = static_cast<CCNode*>(
+                children->lastObject()
+            );
+        }
+
         leftMenu->addChild(button);
-        leftMenu->updateLayout();
+
+        if (lastButton) {
+            auto position = lastButton->getPosition();
+
+            button->setPosition({
+                position.x,
+                position.y - 40.f
+            });
+        }
+        else {
+            button->setPosition({ 0.f, 0.f });
+        }
 
         return true;
     }
