@@ -319,6 +319,25 @@ public:
 
 // Moderator's Suggest Stars Layer
 
+class $modify(RateStarsLayer) {
+    void onRate(CCObject* sender) {
+        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+
+        if (layer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+            popup->show();
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5),
+                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
+                nullptr
+            ));
+        }
+        else {
+            RateStarsLayer::onRate(sender);
+        }
+    }
+};
+
     void DelayRate() {
         auto scene = CCDirector::get()->getRunningScene();
 
@@ -407,7 +426,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             return false;
 
         if (
-            Mod::get()->getSettingValue<int64_t>("modType") != 1 &&
+            Mod::get()->getSettingValue<int64_t>("modType") != 1 ||
             Mod::get()->getSettingValue<int64_t>("modType") != 2
         ) {
             return true;
@@ -484,9 +503,18 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 // Devlopper's Rate Stars Layer
 
 class $modify(MyRateStarsLayer, RateStarsLayer) {
-    bool init(int levelID) {
-        if (!RateStarsLayer::init(levelID))
+    bool init(
+        int levelID,
+        bool platformer,
+        bool moderator
+    ) {
+        if (!RateStarsLayer::init(
+            levelID,
+            platformer,
+            moderator
+        )) {
             return false;
+        }
 
         for (auto child :
              CCArrayExt<CCNode*>(this->getChildren())) {
@@ -507,11 +535,14 @@ class $modify(MyRateStarsLayer, RateStarsLayer) {
         return true;
     }
 
-    void onRate(CCObject*) {
-        auto popup = UploadActionPopup::create(
-            nullptr,
-            "Loading..."
-        );
+     void onSubmit(
+            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+            popup->show();
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5),
+                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
+                nullptr
+            );
 
         popup->show();
 
