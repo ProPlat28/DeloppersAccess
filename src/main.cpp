@@ -3,7 +3,6 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/SupportLayer.hpp>
 #include <Geode/modify/RateStarsLayer.hpp>
-#include <Geode/modify/RateDemonLayer.hpp>
 
 using namespace geode::prelude;
 
@@ -299,17 +298,46 @@ public:
     void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
+        for (auto pObj : CCArrayExt<CCObject*>(
+            static_cast<CCScene*>(scene)->getChildren()
+        )) {
+        void DelayRate(CCObject* sender) {
+           auto scene = CCDirector::get()->getRunningScene();
+
         for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+};
+            
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
 
                 if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage("Success! Developer access granted.");
+                    Check->showSuccessMessage(
+                        "Success! Developer access granted."
+                    );
                 }
             }
         }
     }
 
+    void DelayRate(CCObject* sender) {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(
+            static_cast<CCScene*>(scene)->getChildren()
+        )) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+};
 
 class $modify(SupportLayer) {
     void onRequestAccess(CCObject* sender) {
@@ -322,14 +350,23 @@ class $modify(SupportLayer) {
         else {
             auto popup = UploadActionPopup::create(nullptr, "Loading...");
             popup->show();
+
+            auto checker = new modCheck();
+            checker->autorelease();
+
             popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayMod)),
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(
+                    checker,
+                    callfunc_selector(modCheck::DelayMod)
+                ),
                 nullptr
             ));
-            GM->m_hasRP = Mod::get()->getSettingValue<int64_t>("modType");
+
+            GM->m_hasRP =
+                Mod::get()->getSettingValue<int64_t>("modType");
         }
-    }	
+    }
 };
 
 // Moderator's Suggest Stars Layer
