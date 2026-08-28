@@ -220,51 +220,60 @@ auto popup = new SetFeaturedPopup();
 };
 
 class $modify(SFLevelInfoLayer, LevelInfoLayer) {
-struct Fields {
-GJGameLevel* level = nullptr;
-};
+    struct Fields {
+        GJGameLevel* level = nullptr;
+    };
 
-bool init(GJGameLevel* level, bool challenge) {
-    if (!LevelInfoLayer::init(level, challenge))
-        return false;
+    bool init(GJGameLevel* level, bool challenge) {
+        if (!LevelInfoLayer::init(level, challenge))
+            return false;
 
-    m_fields->level = level;
+        m_fields->level = level;
 
-    auto leftMenu = getChildByID("left-side-menu");
+        auto leftMenu = getChildByID("left-side-menu");
 
-    if (!leftMenu || leftMenu->getChildByID("set-featured-button"))
+        if (!leftMenu)
+            return true;
+
+        if (leftMenu->getChildByID("set-featured-button"))
+            return true;
+
+        auto star = CCSprite::create("sf_star_icon.png"_spr);
+
+        if (!star)
+            return true;
+
+        star->setScale(0.6f);
+
+        auto button = CCMenuItemSpriteExtra::create(
+            star,
+            this,
+            menu_selector(SFLevelInfoLayer::onSetFeatured)
+        );
+
+        if (!button)
+            return true;
+
+        button->setID("set-featured-button");
+
+        button->setLayoutOptions(
+            AxisLayoutOptions::create()
+                ->setPrevGap(5.f)
+        );
+
+        leftMenu->addChild(button);
+        leftMenu->updateLayout();
+
         return true;
+    }
 
-    auto star = CCSprite::create("sf_star_icon.png"_spr);
+    void onSetFeatured(CCObject*) {
+        if (!m_fields->level)
+            return;
 
-    if (!star)
-        return true;
+        auto popup = SetFeaturedPopup::create(m_fields->level);
 
-    star->setScale(0.6f);
-
-    auto button = CCMenuItemSpriteExtra::create(
-        star,
-        this,
-        menu_selector(SFLevelInfoLayer::onSetFeatured)
-    );
-
-    if (!button)
-        return true;
-
-    button->setID("set-featured-button");
-    leftMenu->addChild(button);
-
-    return true;
-}
-
-void onSetFeatured(CCObject*) {
-    if (!m_fields->level)
-        return;
-
-    auto popup = SetFeaturedPopup::create(m_fields->level);
-
-    if (popup)
-        popup->show();
-}
-
+        if (popup)
+            popup->show();
+    }
 };
