@@ -1,3 +1,4 @@
+```cpp
 #include <Geode/Geode.hpp>
 #include <Geode/ui/Popup.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
@@ -7,223 +8,241 @@
 
 using namespace geode::prelude;
 
-// Set Featured button
+
+// ====================
+// SET FEATURED POPUP
+// ====================
 
 class SetFeaturedPopup : public Popup {
 protected:
-GJGameLevel* m_level = nullptr;
-int m_value = 0;
-CCLabelBMFont* m_valueLabel = nullptr;
+    GJGameLevel* m_level = nullptr;
+    int m_value = 0;
+    CCLabelBMFont* m_valueLabel = nullptr;
 
-bool init(GJGameLevel* level) {
-    if (!Popup::init(380.f, 180.f))
-        return false;
+    bool init(GJGameLevel* level) {
+        if (!Popup::init(380.f, 180.f))
+            return false;
 
-    m_level = level;
-    m_value = level ? level->m_featured : 0;
+        m_level = level;
+        m_value = level ? level->m_featured : 0;
 
-    if (m_closeBtn)
-        m_closeBtn->setVisible(false);
+        if (m_closeBtn)
+            m_closeBtn->setVisible(false);
 
-    auto bg = CCScale9Sprite::create("GJ_square01.png");
-    bg->setContentSize({ 380.f, 180.f });
-    bg->setPosition({ 190.f, 90.f });
-    m_mainLayer->addChild(bg, -1);
+        auto bg = CCScale9Sprite::create("GJ_square01.png");
+        bg->setContentSize({ 380.f, 180.f });
+        bg->setPosition({ 190.f, 90.f });
+        m_mainLayer->addChild(bg, -1);
 
-    auto closeSprite = CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
-    auto closeButton = CCMenuItemSpriteExtra::create(
-        closeSprite,
-        this,
-        menu_selector(SetFeaturedPopup::onClose)
-    );
+        auto closeSprite =
+            CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
 
-    auto closeMenu = CCMenu::create();
-    closeMenu->addChild(closeButton);
-    closeMenu->setPosition({ 378.f, 182.f });
-    m_mainLayer->addChild(closeMenu);
-
-    auto title = CCLabelBMFont::create("Set Featured", "bigFont.fnt");
-    title->setScale(0.9f);
-    title->setPosition({ 190.f, 162.f });
-    m_mainLayer->addChild(title);
-
-    m_valueLabel = CCLabelBMFont::create(
-        std::to_string(m_value).c_str(),
-        "bigFont.fnt"
-    );
-
-    m_valueLabel->setScale(0.9f);
-    m_valueLabel->setPosition({ 190.f, 100.f });
-    m_mainLayer->addChild(m_valueLabel);
-
-    auto arrows = CCMenu::create();
-    arrows->setPosition({ 0.f, 0.f });
-
-    auto addArrow = [&](char const* frame, float rotation, SEL_MenuHandler callback, float x) {
-        auto sprite = CCSprite::createWithSpriteFrameName(frame);
-
-        if (!sprite)
-            return;
-
-        sprite->setRotation(rotation);
-        sprite->setScale(0.95f);
-
-        auto button = CCMenuItemSpriteExtra::create(
-            sprite,
+        auto closeButton = CCMenuItemSpriteExtra::create(
+            closeSprite,
             this,
-            callback
+            menu_selector(SetFeaturedPopup::onClose)
         );
 
-        if (!button)
-            return;
+        auto closeMenu = CCMenu::create();
+        closeMenu->addChild(closeButton);
+        closeMenu->setPosition({ 378.f, 182.f });
+        m_mainLayer->addChild(closeMenu);
 
-        button->setPosition({ x, 100.f });
-        arrows->addChild(button);
-    };
+        auto title =
+            CCLabelBMFont::create("Set Featured", "bigFont.fnt");
 
-    addArrow(
-        "GJ_arrow_01_001.png",
-        -90.f,
-        menu_selector(SetFeaturedPopup::onMinus10),
-        32.f
-    );
+        title->setScale(0.9f);
+        title->setPosition({ 190.f, 162.f });
+        m_mainLayer->addChild(title);
 
-    addArrow(
-        "GJ_arrow_02_001.png",
-        -90.f,
-        menu_selector(SetFeaturedPopup::onMinus1),
-        84.f
-    );
+        m_valueLabel = CCLabelBMFont::create(
+            std::to_string(m_value).c_str(),
+            "bigFont.fnt"
+        );
 
-    addArrow(
-        "GJ_arrow_02_001.png",
-        90.f,
-        menu_selector(SetFeaturedPopup::onPlus1),
-        296.f
-    );
+        m_valueLabel->setScale(0.9f);
+        m_valueLabel->setPosition({ 190.f, 100.f });
+        m_mainLayer->addChild(m_valueLabel);
 
-    addArrow(
-        "GJ_arrow_01_001.png",
-        90.f,
-        menu_selector(SetFeaturedPopup::onPlus10),
-        348.f
-    );
+        auto arrows = CCMenu::create();
+        arrows->setPosition({ 0.f, 0.f });
 
-    m_mainLayer->addChild(arrows);
+        auto addArrow = [&](
+            char const* frame,
+            float rotation,
+            SEL_MenuHandler callback,
+            float x
+        ) {
+            auto sprite =
+                CCSprite::createWithSpriteFrameName(frame);
 
-    auto buttons = CCMenu::create();
-    buttons->setPosition({ 190.f, 25.f });
+            if (!sprite)
+                return;
 
-    auto cancelSprite = ButtonSprite::create(
-        "Cancel",
-        "goldFont.fnt",
-        "GJ_button_01.png"
-    );
+            sprite->setRotation(rotation);
+            sprite->setScale(0.95f);
 
-    auto cancelButton = CCMenuItemSpriteExtra::create(
-        cancelSprite,
-        this,
-        menu_selector(SetFeaturedPopup::onCancel)
-    );
+            auto button = CCMenuItemSpriteExtra::create(
+                sprite,
+                this,
+                callback
+            );
 
-    cancelButton->setPosition({ -60.f, 0.f });
-    buttons->addChild(cancelButton);
+            if (!button)
+                return;
 
-    auto submitSprite = ButtonSprite::create(
-        "Submit",
-        "goldFont.fnt",
-        "GJ_button_01.png"
-    );
+            button->setPosition({ x, 100.f });
+            arrows->addChild(button);
+        };
 
-    auto submitButton = CCMenuItemSpriteExtra::create(
-        submitSprite,
-        this,
-        menu_selector(SetFeaturedPopup::onSubmit)
-    );
+        addArrow(
+            "GJ_arrow_01_001.png",
+            -90.f,
+            menu_selector(SetFeaturedPopup::onMinus10),
+            32.f
+        );
 
-    submitButton->setPosition({ 60.f, 0.f });
-    buttons->addChild(submitButton);
+        addArrow(
+            "GJ_arrow_02_001.png",
+            -90.f,
+            menu_selector(SetFeaturedPopup::onMinus1),
+            84.f
+        );
 
-    m_mainLayer->addChild(buttons);
+        addArrow(
+            "GJ_arrow_02_001.png",
+            90.f,
+            menu_selector(SetFeaturedPopup::onPlus1),
+            296.f
+        );
 
-    auto epicMenu = CCMenu::create();
-    epicMenu->setPosition({ 350.f, 25.f });
+        addArrow(
+            "GJ_arrow_01_001.png",
+            90.f,
+            menu_selector(SetFeaturedPopup::onPlus10),
+            348.f
+        );
 
-    auto epicSprite = ButtonSprite::create(
-        "Epic\nOnly",
-        "goldFont.fnt",
-        "GJ_button_01.png"
-    );
+        m_mainLayer->addChild(arrows);
 
-    epicSprite->setScale(0.45f);
+        auto buttons = CCMenu::create();
+        buttons->setPosition({ 190.f, 25.f });
 
-    auto epicButton = CCMenuItemSpriteExtra::create(
-        epicSprite,
-        this,
-        menu_selector(SetFeaturedPopup::onEpicOnly)
-    );
+        auto cancelSprite = ButtonSprite::create(
+            "Cancel",
+            "goldFont.fnt",
+            "GJ_button_01.png"
+        );
 
-    epicMenu->addChild(epicButton);
-    m_mainLayer->addChild(epicMenu);
+        auto cancelButton = CCMenuItemSpriteExtra::create(
+            cancelSprite,
+            this,
+            menu_selector(SetFeaturedPopup::onCancel)
+        );
 
-    return true;
-}
+        cancelButton->setPosition({ -60.f, 0.f });
+        buttons->addChild(cancelButton);
 
-void updateValue() {
-    if (m_valueLabel)
-        m_valueLabel->setString(std::to_string(m_value).c_str());
-}
+        auto submitSprite = ButtonSprite::create(
+            "Submit",
+            "goldFont.fnt",
+            "GJ_button_01.png"
+        );
 
-void onMinus10(CCObject*) {
-    m_value -= 10;
-    updateValue();
-}
+        auto submitButton = CCMenuItemSpriteExtra::create(
+            submitSprite,
+            this,
+            menu_selector(SetFeaturedPopup::onSubmit)
+        );
 
-void onMinus1(CCObject*) {
-    --m_value;
-    updateValue();
-}
+        submitButton->setPosition({ 60.f, 0.f });
+        buttons->addChild(submitButton);
 
-void onPlus1(CCObject*) {
-    ++m_value;
-    updateValue();
-}
+        m_mainLayer->addChild(buttons);
 
-void onPlus10(CCObject*) {
-    m_value += 10;
-    updateValue();
-}
+        auto epicMenu = CCMenu::create();
+        epicMenu->setPosition({ 350.f, 25.f });
 
-void onCancel(CCObject* sender) {
-    onClose(sender);
-}
+        auto epicSprite = ButtonSprite::create(
+            "Epic\nOnly",
+            "goldFont.fnt",
+            "GJ_button_01.png"
+        );
 
-void onEpicOnly(CCObject* sender) {
-    onClose(sender);
-}
+        epicSprite->setScale(0.45f);
 
-void onSubmit(CCObject* sender) {
-    if (m_level)
-        m_level->m_featured = m_value;
+        auto epicButton = CCMenuItemSpriteExtra::create(
+            epicSprite,
+            this,
+            menu_selector(SetFeaturedPopup::onEpicOnly)
+        );
 
-    onClose(sender);
-}
+        epicMenu->addChild(epicButton);
+        m_mainLayer->addChild(epicMenu);
 
-public:
-static SetFeaturedPopup* create(GJGameLevel* level) {
-auto popup = new SetFeaturedPopup();
-
-    if (!popup->init(level)) {
-        delete popup;
-        return nullptr;
+        return true;
     }
 
-    popup->autorelease();
-    return popup;
-}
+    void updateValue() {
+        if (m_valueLabel)
+            m_valueLabel->setString(
+                std::to_string(m_value).c_str()
+            );
+    }
 
+    void onMinus10(CCObject*) {
+        m_value -= 10;
+        updateValue();
+    }
+
+    void onMinus1(CCObject*) {
+        --m_value;
+        updateValue();
+    }
+
+    void onPlus1(CCObject*) {
+        ++m_value;
+        updateValue();
+    }
+
+    void onPlus10(CCObject*) {
+        m_value += 10;
+        updateValue();
+    }
+
+    void onCancel(CCObject* sender) {
+        onClose(sender);
+    }
+
+    void onEpicOnly(CCObject* sender) {
+        onClose(sender);
+    }
+
+    void onSubmit(CCObject* sender) {
+        if (m_level)
+            m_level->m_featured = m_value;
+
+        onClose(sender);
+    }
+
+public:
+    static SetFeaturedPopup* create(GJGameLevel* level) {
+        auto popup = new SetFeaturedPopup();
+
+        if (!popup->init(level)) {
+            delete popup;
+            return nullptr;
+        }
+
+        popup->autorelease();
+        return popup;
+    }
 };
 
+
+// ====================
+// SET FEATURED BUTTON
+// ====================
 
 class $modify(SFLevelInfoLayer, LevelInfoLayer) {
     struct Fields {
@@ -236,9 +255,16 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         m_fields->level = level;
 
-        auto starSprite = CCSprite::create(
-            "sf_star_icon.png"_spr
-        );
+        auto leftMenu = getChildByID("left-side-menu");
+
+        if (!leftMenu)
+            return true;
+
+        if (leftMenu->getChildByID("set-featured-button"))
+            return true;
+
+        auto starSprite =
+            CCSprite::create("sf_star_icon.png"_spr);
 
         if (!starSprite)
             return true;
@@ -256,55 +282,53 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         starButton->setID("set-featured-button");
 
-        auto leftMenu = getChildByID("left-side-menu");
+        leftMenu->addChild(starButton);
+        leftMenu->updateLayout();
 
-if (!leftMenu)
-    return true;
+        return true;
+    }
 
-if (leftMenu->getChildByID("set-featured-button"))
-    return true;
+    void onSetFeatured(CCObject*) {
+        auto popup = SetFeaturedPopup::create(m_fields->level);
 
-auto starSprite = CCSprite::create("sf_star_icon.png"_spr);
+        if (popup)
+            popup->show();
+    }
+};
 
-if (!starSprite)
-    return true;
 
-starSprite->setScale(0.6f);
+// ====================
+// HELPER
+// ====================
 
-auto starButton = CCMenuItemSpriteExtra::create(
-    starSprite,
-    this,
-    menu_selector(SFLevelInfoLayer::onSetFeatured)
-);
-
-if (!starButton)
-    return true;
-
-starButton->setID("set-featured-button");
-
-leftMenu->addChild(starButton);
-
-leftMenu->updateLayout();
-
-// Moderator's Suggest Stars button
-
-template<typename Base, typename T>
+template <typename Base, typename T>
 inline bool instanceof(const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
+
+
+// ====================
+// POPUP CALLBACKS
+// ====================
 
 class modCheck : public CCObject {
 public:
     void DelayMod() {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-                
-                }
-                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage("Success! Devlopper access granted.");
+        for (auto pObj :
+             CCArrayExt<CCObject*>(scene->getChildren())) {
+
+            if (auto Check =
+                    typeinfo_cast<UploadActionPopup*>(pObj)) {
+
+                if (Mod::get()->getSettingValue<int64_t>(
+                        "modType"
+                    ) == 2) {
+
+                    Check->showSuccessMessage(
+                        "Success! Devlopper access granted."
+                    );
                 }
             }
         }
@@ -313,59 +337,92 @@ public:
     void DelayRate() {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Rating submitted!");
+        for (auto pObj :
+             CCArrayExt<CCObject*>(scene->getChildren())) {
+
+            if (auto Check =
+                    typeinfo_cast<UploadActionPopup*>(pObj)) {
+
+                Check->showSuccessMessage(
+                    "Rating submitted!"
+                );
             }
         }
     }
 };
 
-    void DelayRate(CCObject* sender) {
-        auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
+// ====================
+// REQUEST ACCESS
+// ====================
 
-class $modify(SupportLayer) {
+class $modify(MySupportLayer, SupportLayer) {
     void onRequestAccess(CCObject* sender) {
         auto GM = GameManager::sharedState();
 
-        if (Mod::get()->getSettingValue<int64_t>("modType") == 3) {
+        if (Mod::get()->getSettingValue<int64_t>(
+                "modType"
+            ) == 3) {
+
             SupportLayer::onRequestAccess(sender);
             GM->m_hasRP = 0;
         }
         else {
-            auto popup = UploadActionPopup::create(nullptr, "Loading...");
+            auto popup = UploadActionPopup::create(
+                nullptr,
+                "Loading..."
+            );
+
             popup->show();
-            popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayMod)),
-                nullptr
-            ));
-            GM->m_hasRP = Mod::get()->getSettingValue<int64_t>("modType");
+
+            popup->runAction(
+                CCSequence::create(
+                    CCDelayTime::create(0.5f),
+                    CCCallFunc::create(
+                        this,
+                        callfunc_selector(modCheck::DelayMod)
+                    ),
+                    nullptr
+                )
+            );
+
+            GM->m_hasRP =
+                Mod::get()->getSettingValue<int64_t>(
+                    "modType"
+                );
         }
-    }	
+    }
 };
 
-class $modify(RateStarsLayer) {
-    void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
 
-        if (layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+// ====================
+// RATE STARS
+// ====================
+
+class $modify(MyRateStarsLayer, RateStarsLayer) {
+    void onRate(CCObject* sender) {
+        auto layer = static_cast<CCLayer*>(
+            this->getChildren()->objectAtIndex(0)
+        );
+
+        if (layer && layer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(
+                nullptr,
+                "Sending rating..."
+            );
+
             popup->show();
-            popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
-                nullptr
-            ));
+
+            popup->runAction(
+                CCSequence::create(
+                    CCDelayTime::create(0.5f),
+                    CCCallFunc::create(
+                        this,
+                        callfunc_selector(modCheck::DelayRate)
+                    ),
+                    nullptr
+                )
+            );
         }
         else {
             RateStarsLayer::onRate(sender);
@@ -373,20 +430,26 @@ class $modify(RateStarsLayer) {
     }
 };
 
-// Elder Moderator's Delete Button
+// Elder Moderator's Delete button
 
-class $modify(LevelInfoLayer) {
+class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     void levelDeleteFailed(int a1) {
-        auto scene = CCDirector::get()->getRunningScene();
+        if (
+            Mod::get()->getSettingValue<int64_t>("modType") == 1
+            Mod::get()->getSettingValue<int64_t>("modType") == 2
+        ) {
+            FLAlertLayer::create(
+                "Level Deleted",
+                "The level has been removed from the server",
+                "OK"
+            )->show();
 
-        if (Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
-            Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+            for (auto pObj :
+                 CCArrayExt<CCObject*>(this->getChildren())) {
 
-            FLAlertLayer::create("Level Deleted", "The level has been removed from the server", "OK")->show();
+                if (auto loadingCircle =
+                        typeinfo_cast<LoadingCircle*>(pObj)) {
 
-            for (auto pObj : CCArrayExt<CCObject*>(this->getChildren())) {
-                if (instanceof<LoadingCircle>(pObj)) {
-                    auto loadingCircle = static_cast<LoadingCircle*>(pObj);
                     loadingCircle->setVisible(false);
                 }
             }
@@ -397,18 +460,23 @@ class $modify(LevelInfoLayer) {
     }
 };
 
-// Devlopper's Rate Stars Layer
+// Devlopper's Rate Demon Layer (Imagined)
 
 class $modify(MyRateDemonLayer, RateDemonLayer) {
     bool init(int levelID) {
-        if (!RateDemonLayer::init(levelID)) {
+        if (!RateDemonLayer::init(levelID))
             return false;
-        }
 
-        // Find and change the title
-        for (auto child : CCArrayExt<CCNode*>(this->getChildren())) {
-            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
-                if (std::string(label->getString()) == "Rate Demon") {
+        for (auto child :
+             CCArrayExt<CCNode*>(this->getChildren())) {
+
+            if (auto label =
+                    typeinfo_cast<CCLabelBMFont*>(child)) {
+
+                if (
+                    std::string(label->getString()) ==
+                    "Rate Demon"
+                ) {
                     label->setString("DEV: Set Demon");
                     break;
                 }
@@ -418,26 +486,41 @@ class $modify(MyRateDemonLayer, RateDemonLayer) {
         return true;
     }
 
-    void onRate(CCObject* sender) {
-        auto popup = UploadActionPopup::create(nullptr, "Sending Rating...");
+    void onRate(CCObject*) {
+        auto popup = UploadActionPopup::create(
+            nullptr,
+            "Sending Rating..."
+        );
+
         popup->show();
 
-        popup->runAction(CCSequence::create(
-            CCDelayTime::create(0.5f),
-            CCCallFunc::create(
-                this,
-                callfunc_selector(MyRateDemonLayer::delayRate)
-            ),
-            nullptr
-        ));
+        popup->runAction(
+            CCSequence::create(
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(
+                    this,
+                    callfunc_selector(
+                        MyRateDemonLayer::delayRate
+                    )
+                ),
+                nullptr
+            )
+        );
     }
 
     void delayRate() {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto popup = typeinfo_cast<UploadActionPopup*>(pObj)) {
-                popup->showSuccessMessage("Rating Submitted!");
+        for (auto pObj :
+             CCArrayExt<CCObject*>(scene->getChildren())) {
+
+            if (auto popup =
+                    typeinfo_cast<UploadActionPopup*>(pObj)) {
+
+                popup->showSuccessMessage(
+                    "Rating Submitted!"
+                );
+
                 break;
             }
         }
