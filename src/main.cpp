@@ -256,11 +256,6 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         button->setID("set-featured-button");
 
-        button->setLayoutOptions(
-            AxisLayoutOptions::create()
-                ->setPrevGap(5.f)
-        );
-
         leftMenu->addChild(button);
         leftMenu->updateLayout();
 
