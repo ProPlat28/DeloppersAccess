@@ -364,3 +364,27 @@ class $modify(RateStarsLayer) {
         }
     }
 };
+
+// Elder Moderator's Delete Button
+
+class $modify(LevelInfoLayer) {
+    void levelDeleteFailed(int a1) {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        if (Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
+            Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+
+            FLAlertLayer::create("Level Deleted", "The level has been removed from the server", "OK")->show();
+
+            for (auto pObj : CCArrayExt<CCObject*>(this->getChildren())) {
+                if (instanceof<LoadingCircle>(pObj)) {
+                    auto loadingCircle = static_cast<LoadingCircle*>(pObj);
+                    loadingCircle->setVisible(false);
+                }
+            }
+        }
+        else {
+            LevelInfoLayer::levelDeleteFailed(a1);
+        }
+    }
+};
