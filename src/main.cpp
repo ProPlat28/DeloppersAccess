@@ -1,8 +1,13 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/ui/Popup.hpp>
+#include <Geode/modify/LevelInfoLayer.hpp>
+#include <Geode/modify/SupportLayer.hpp>
+#include <Geode/modify/RateStarsLayer.hpp>
+#include <Geode/modify/RateDemonLayer.hpp>
 
 using namespace geode::prelude;
+
+// Set Featured button
 
 class SetFeaturedPopup : public Popup {
 protected:
@@ -280,3 +285,181 @@ starButton->setID("set-featured-button");
 leftMenu->addChild(starButton);
 
 leftMenu->updateLayout();
+
+// Moderator's Suggest Stars button
+
+template<typename Base, typename T>
+inline bool instanceof(const T* ptr) {
+    return dynamic_cast<const Base*>(ptr) != nullptr;
+}
+
+class modCheck : public CCObject {
+public:
+    void DelayMod() {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                
+                }
+                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+                    Check->showSuccessMessage("Success! Devlopper access granted.");
+                }
+            }
+        }
+    }
+
+    void DelayRate() {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+};
+
+    void DelayRate(CCObject* sender) {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+
+class $modify(SupportLayer) {
+    void onRequestAccess(CCObject* sender) {
+        auto GM = GameManager::sharedState();
+
+        if (Mod::get()->getSettingValue<int64_t>("modType") == 3) {
+            SupportLayer::onRequestAccess(sender);
+            GM->m_hasRP = 0;
+        }
+        else {
+            auto popup = UploadActionPopup::create(nullptr, "Loading...");
+            popup->show();
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5),
+                CCCallFunc::create(this, callfunc_selector(modCheck::DelayMod)),
+                nullptr
+            ));
+            GM->m_hasRP = Mod::get()->getSettingValue<int64_t>("modType");
+        }
+    }	
+};
+
+class $modify(RateStarsLayer) {
+    void onRate(CCObject* sender) {
+        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+
+        if (layer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+            popup->show();
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5),
+                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
+                nullptr
+            ));
+        }
+        else {
+            RateStarsLayer::onRate(sender);
+        }
+    }
+};
+
+// Elder Moderator's Delete Button
+
+class $modify(LevelInfoLayer) {
+    void levelDeleteFailed(int a1) {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        if (Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
+            Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+
+            FLAlertLayer::create("Level Deleted", "The level has been removed from the server", "OK")->show();
+
+            for (auto pObj : CCArrayExt<CCObject*>(this->getChildren())) {
+                if (instanceof<LoadingCircle>(pObj)) {
+                    auto loadingCircle = static_cast<LoadingCircle*>(pObj);
+                    loadingCircle->setVisible(false);
+                }
+            }
+        }
+        else {
+            LevelInfoLayer::levelDeleteFailed(a1);
+        }
+    }
+};
+
+// Devlopper's Rate Stars Layer
+
+#include <Geode/Geode.hpp>
+#include <Geode/modify/RateDemonLayer.hpp>
+
+using namespace geode::prelude;
+
+class modCheck : public CCObject {
+public:
+    void DelayRate() {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto popup = typeinfo_cast<UploadActionPopup*>(pObj)) {
+                popup->showSuccessMessage("Rating Submitted!");
+            }
+        }
+    }
+};
+
+class $modify(MyRateDemonLayer, RateDemonLayer) {
+    bool init() {
+        if (!RateDemonLayer::init()) {
+            return false;
+        }
+    
+        for (auto child : CCArrayExt<CCNode*>(this->getChildren())) {
+            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
+                auto text = std::string(label->getString());
+
+                if (text == "Rate Demon") {
+                    label->setString("DEV: Set Demon");
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    void onRate(CCObject* sender) {
+        auto popup = UploadActionPopup::create(nullptr, "Sending Rating...");
+        popup->show();
+
+        popup->runAction(
+            CCSequence::create(
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(
+                    this,
+                    callfunc_selector(MyRateDemonLayer::DelayRate)
+                ),
+                nullptr
+            )
+        );
+    }
+
+    void DelayRate() {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
+                Check->showSuccessMessage("Rating Submitted!");
+            }
+        }
+    }
+};
