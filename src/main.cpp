@@ -12,7 +12,6 @@ GJGameLevel* m_level = nullptr;
 int m_value = 0;
 CCLabelBMFont* m_valueLabel = nullptr;
 
-```
 bool init(GJGameLevel* level) {
     if (!Popup::init(380.f, 180.f))
         return false;
@@ -278,7 +277,6 @@ void onSubmit(CCObject* sender) {
 
     onClose(sender);
 }
-```
 
 public:
 static SetFeaturedPopup* create(GJGameLevel* level) {
@@ -293,7 +291,6 @@ auto popup = new SetFeaturedPopup();
     delete popup;
     return nullptr;
 }
-```
 
 };
 
@@ -302,7 +299,6 @@ struct Fields {
 GJGameLevel* level = nullptr;
 };
 
-```
 bool init(GJGameLevel* level, bool challenge) {
     if (!LevelInfoLayer::init(level, challenge))
         return false;
