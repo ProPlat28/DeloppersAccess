@@ -293,7 +293,7 @@ inline bool instanceof(const T* ptr) {
 
 // Support Layer
 
-class modCheck {
+class modCheck : public CCObject {
 public:
     void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
@@ -301,18 +301,6 @@ public:
         for (auto pObj : CCArrayExt<CCObject*>(
             static_cast<CCScene*>(scene)->getChildren()
         )) {
-        void DelayRate(CCObject* sender) {
-           auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
-};
-            
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
 
@@ -369,30 +357,32 @@ class $modify(SupportLayer) {
     }
 };
 
+
 // Moderator's Suggest Stars Layer
-
-void DelayRate(CCObject* sender) {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
-};
 
 class $modify(RateStarsLayer) {
     void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+        auto layer = static_cast<CCLayer*>(
+            this->getChildren()->objectAtIndex(0)
+        );
 
         if (layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+            auto popup = UploadActionPopup::create(
+                nullptr,
+                "Sending rating..."
+            );
+
             popup->show();
+
+            auto checker = new modCheck();
+            checker->autorelease();
+
             popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(
+                    checker,
+                    callfunc_selector(modCheck::DelayRate)
+                ),
                 nullptr
             ));
         }
