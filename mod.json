@@ -11,6 +11,16 @@
     "name": "Devlopper's Access",
     "developer": "ProPlat",
     "description": "This mod gives you the RobTop access! (Cosmetic only)",
+    "settings": {
+		"modType": {
+			"name": "Moderator Type",
+			"description": "Something",
+			"type": "int",
+			"default": 2,
+			"min": 2,
+			"max": 2
+        }
+	},
     "resources": {
         "sprites": [
             "resources/sf_star_icon.png",
