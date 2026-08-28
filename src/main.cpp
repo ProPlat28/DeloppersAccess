@@ -299,38 +299,54 @@ public:
     void DelayMod() {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj :
-             CCArrayExt<CCObject*>(scene->getChildren())) {
-
-            if (auto Check =
-                    typeinfo_cast<UploadActionPopup*>(pObj)) {
-
-                if (Mod::get()->getSettingValue<int64_t>(
-                        "modType"
-                    ) == 2) {
-
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
+                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
                     Check->showSuccessMessage(
-                        "Success! Devlopper access granted."
+                        "Success! Developer access granted."
                     );
                 }
             }
         }
     }
 
+    void DelayRate() {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
+                Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+};
+
 // Moderator's Suggest Stars Layer
 
-class $modify(RateStarsLayer) {
+class $modify(MyRateStarsLayerMod, RateStarsLayer) {
     void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+        auto layer = static_cast<CCLayer*>(
+            this->getChildren()->objectAtIndex(0)
+        );
 
-        if (layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+        if (layer && layer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(
+                nullptr,
+                "Sending rating..."
+            );
+
             popup->show();
-            popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
-                nullptr
-            ));
+
+            popup->runAction(
+                CCSequence::create(
+                    CCDelayTime::create(0.5f),
+                    CCCallFunc::create(
+                        new modCheck(),
+                        callfunc_selector(modCheck::DelayRate)
+                    ),
+                    nullptr
+                )
+            );
         }
         else {
             RateStarsLayer::onRate(sender);
@@ -338,31 +354,27 @@ class $modify(RateStarsLayer) {
     }
 };
 
-    void DelayRate() {
+// Support Layer
+
+class $modify(MySupportLayer, SupportLayer) {
+    void DelayMod() {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj :
-             CCArrayExt<CCObject*>(scene->getChildren())) {
-
-            if (auto Check =
-                    typeinfo_cast<UploadActionPopup*>(pObj)) {
-
-                Check->showSuccessMessage(
-                    "Rating submitted!"
-                );
+        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
+                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+                    Check->showSuccessMessage(
+                        "Success! Developer access granted."
+                    );
+                }
             }
         }
     }
-};
 
-class $modify(MySupportLayer, SupportLayer) {
     void onRequestAccess(CCObject* sender) {
         auto GM = GameManager::sharedState();
 
-        if (Mod::get()->getSettingValue<int64_t>(
-                "modType"
-            ) == 3) {
-
+        if (Mod::get()->getSettingValue<int64_t>("modType") == 3) {
             SupportLayer::onRequestAccess(sender);
             GM->m_hasRP = 0;
         }
@@ -379,41 +391,14 @@ class $modify(MySupportLayer, SupportLayer) {
                     CCDelayTime::create(0.5f),
                     CCCallFunc::create(
                         this,
-                        callfunc_selector(modCheck::DelayMod)
+                        callfunc_selector(MySupportLayer::DelayMod)
                     ),
                     nullptr
                 )
             );
 
             GM->m_hasRP =
-                Mod::get()->getSettingValue<int64_t>(
-                    "modType"
-                );
-        }
-    }
-};
-
-        if (layer && layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(
-                nullptr,
-                "Sending rating..."
-            );
-
-            popup->show();
-
-            popup->runAction(
-                CCSequence::create(
-                    CCDelayTime::create(0.5f),
-                    CCCallFunc::create(
-                        this,
-                        callfunc_selector(modCheck::DelayRate)
-                    ),
-                    nullptr
-                )
-            );
-        }
-        else {
-            RateStarsLayer::onRate(sender);
+                Mod::get()->getSettingValue<int64_t>("modType");
         }
     }
 };
@@ -535,14 +520,16 @@ class $modify(MyRateStarsLayer, RateStarsLayer) {
         return true;
     }
 
-     void onSubmit(
-            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
-            popup->show();
-            popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
-                nullptr
-            );
+    void onSubmit(CCObject* sender) {
+        auto popup = UploadActionPopup::create(
+            nullptr,
+            "Sending rating..."
+        );
+
+        if (!popup) {
+            RateStarsLayer::onSubmit(sender);
+            return;
+        }
 
         popup->show();
 
@@ -551,9 +538,7 @@ class $modify(MyRateStarsLayer, RateStarsLayer) {
                 CCDelayTime::create(0.5f),
                 CCCallFunc::create(
                     this,
-                    callfunc_selector(
-                        MyRateStarsLayer::delayRate
-                    )
+                    callfunc_selector(MyRateStarsLayer::delayRate)
                 ),
                 nullptr
             )
