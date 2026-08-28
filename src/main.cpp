@@ -253,32 +253,30 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         auto leftMenu = getChildByID("left-side-menu");
 
-        if (leftMenu) {
-            if (leftMenu->getChildByID("set-featured-button"))
-                return true;
+if (!leftMenu)
+    return true;
 
-            leftMenu->addChild(starButton);
+if (leftMenu->getChildByID("set-featured-button"))
+    return true;
 
-            starButton->setPosition({
-                0.f,
-                -50.f
-            });
+auto starSprite = CCSprite::create("sf_star_icon.png"_spr);
 
-            starButton->setLayoutOptions(nullptr);
-        }
+if (!starSprite)
+    return true;
 
-        return true;
-    }
+starSprite->setScale(0.6f);
 
-    void onSetFeatured(CCObject*) {
-        if (!m_fields->level)
-            return;
+auto starButton = CCMenuItemSpriteExtra::create(
+    starSprite,
+    this,
+    menu_selector(SFLevelInfoLayer::onSetFeatured)
+);
 
-        auto popup = SetFeaturedPopup::create(
-            m_fields->level
-        );
+if (!starButton)
+    return true;
 
-        if (popup)
-            popup->show();
-    }
-};
+starButton->setID("set-featured-button");
+
+leftMenu->addChild(starButton);
+
+leftMenu->updateLayout();
