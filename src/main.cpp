@@ -310,6 +310,8 @@ public:
         }
     }
 
+// Moderator's Suggest Stars Layer
+
     void DelayRate() {
         auto scene = CCDirector::get()->getRunningScene();
 
@@ -320,8 +322,6 @@ public:
         }
     }
 };
-
-// Moderator's Suggest Stars Layer
 
 class $modify(MyRateStarsLayerMod, RateStarsLayer) {
     void onRate(CCObject* sender) {
@@ -405,76 +405,18 @@ class $modify(MySupportLayer, SupportLayer) {
 
 // Elder Moderator's Delete Button
 
-class $modify(MyLevelInfoLayer, LevelInfoLayer) {
-    bool init(GJGameLevel* level, bool challenge) {
-        if (!LevelInfoLayer::init(level, challenge))
-            return false;
-
-        if (
-            Mod::get()->getSettingValue<int64_t>("modType") != 1 ||
-            Mod::get()->getSettingValue<int64_t>("modType") != 2
-        ) {
-            return true;
-        }
-
-        auto menu = getChildByID("left-side-menu");
-
-        if (!menu)
-            return true;
-
-        if (menu->getChildByID("elder-delete-button"))
-            return true;
-
-        auto deleteSprite =
-            CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
-
-        if (!deleteSprite)
-            return true;
-
-        deleteSprite->setScale(0.85f);
-
-        auto deleteButton = CCMenuItemSpriteExtra::create(
-            deleteSprite,
-            this,
-            menu_selector(MyLevelInfoLayer::onElderDelete)
-        );
-
-        if (!deleteButton)
-            return true;
-
-        deleteButton->setID("elder-delete-button");
-
-        menu->addChild(deleteButton);
-        menu->updateLayout();
-
-        return true;
-    }
-
-        void onElderDelete(CCObject*) {
-           FLAlertLayer::create(
-           "Level Deleted",
-           "The level has been removed from the server",
-           "OK"
-       )->show();
-   }
-
+class $modify(LevelInfoLayer) {
     void levelDeleteFailed(int a1) {
-        if (
-            Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
-            Mod::get()->getSettingValue<int64_t>("modType") == 2
-        ) {
-            FLAlertLayer::create(
-                "Level Deleted",
-                "The level has been removed from the server",
-                "OK"
-            )->show();
+        auto scene = CCDirector::get()->getRunningScene();
 
-            for (auto pObj :
-                 CCArrayExt<CCObject*>(this->getChildren())) {
+        if (Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
+            Mod::get()->getSettingValue<int64_t>("modType") == 2) {
 
-                if (auto loadingCircle =
-                        typeinfo_cast<LoadingCircle*>(pObj)) {
+            FLAlertLayer::create("Level Deleted", "The level has been removed from the server", "OK")->show();
 
+            for (auto pObj : CCArrayExt<CCObject*>(this->getChildren())) {
+                if (instanceof<LoadingCircle>(pObj)) {
+                    auto loadingCircle = static_cast<LoadingCircle*>(pObj);
                     loadingCircle->setVisible(false);
                 }
             }
@@ -487,78 +429,80 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 
 // Devlopper's Rate Stars Layer
 
-class $modify(MyRateStarsLayer, RateStarsLayer) {
-    bool init(
-        int levelID,
-        bool platformer,
-        bool moderator
-    ) {
-        if (!RateStarsLayer::init(
-            levelID,
-            platformer,
-            moderator
-        )) {
-            return false;
-        }
+class RateStarsHelper : public CCObject {
+public:
+    void showSubmitted(CCObject*) {
+        auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto child :
-             CCArrayExt<CCNode*>(this->getChildren())) {
-
-            if (auto label =
-                    typeinfo_cast<CCLabelBMFont*>(child)) {
-
-                if (
-                    std::string(label->getString()) ==
-                    "Rate Stars"
-                ) {
-                    label->setString("DEV: Set Stars");
-                    break;
-                }
+        for (auto object : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto popup = typeinfo_cast<UploadActionPopup*>(object)) {
+                popup->showSuccessMessage("Rating Submitted!");
+                break;
             }
         }
+    }
+};
 
+class $modify(MyRateStarsLayerMod, RateStarsLayer) {
+    bool init(int stars) {
+        if (!RateStarsLayer::init(stars))
+            return false;
+
+        this->changeTitle(this);
         return true;
     }
 
-    void onSubmit(CCObject* sender) {
-        auto popup = UploadActionPopup::create(
-            nullptr,
-            "Sending rating..."
-        );
+    static void changeTitle(CCNode* node) {
+        for (auto object : CCArrayExt<CCObject*>(node->getChildren())) {
+            auto child = static_cast<CCNode*>(object);
 
-       if (!popup) {
-         return;
-       }
-        
-        popup->show();
+            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
+                auto text = label->getString();
 
-        popup->runAction(
-            CCSequence::create(
-                CCDelayTime::create(0.5f),
-                CCCallFunc::create(
-                    this,
-                    callfunc_selector(MyRateStarsLayer::delayRate)
-                ),
-                nullptr
-            )
-        );
+                if (text == "Rate Stars" || text == "Rate Star") {
+                    label->setString("DEV: Set Stars");
+                }
+            }
+
+            changeTitle(child);
+        }
     }
 
-    void delayRate() {
-        auto scene = CCDirector::get()->getRunningScene();
+    void onRate(CCObject* sender) {
+        auto firstLayer = typeinfo_cast<CCLayer*>(
+            this->getChildren()->objectAtIndex(0)
+        );
 
-        for (auto pObj :
-             CCArrayExt<CCObject*>(scene->getChildren())) {
+        if (firstLayer && firstLayer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(
+                nullptr,
+                "loading..."
+            );
 
-            if (auto popup =
-                    typeinfo_cast<UploadActionPopup*>(pObj)) {
+            if (!popup)
+                return;
 
-                popup->showSuccessMessage(
-                    "Rating Submitted!"
-                );
+            popup->show();
 
-                break;
-            }
+            auto helper = new RateStarsHelper();
+
+            popup->runAction(
+                CCSequence::create(
+                    CCDelayTime::create(0.5f),
+                    CCCallFunc::create(
+                        helper,
+                        callfunc_selector(RateStarsHelper::showSubmitted)
+                    ),
+                    CCCallFunc::create(
+                        helper,
+                        callfunc_selector(RateStarsHelper::release)
+                    ),
+                    nullptr
+                )
+            );
+        }
+        else {
+            RateStarsLayer::onRate(sender);
         }
     }
 };
