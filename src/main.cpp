@@ -238,15 +238,15 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
         if (leftMenu->getChildByID("set-featured-button"))
             return true;
 
-        auto star = CCSprite::create("sf_star_icon.png"_spr);
+        auto sprite = CCSprite::create("sf_star_icon.png"_spr);
 
-        if (!star)
+        if (!sprite)
             return true;
 
-        star->setScale(0.6f);
+        sprite->setScale(0.6f);
 
         auto button = CCMenuItemSpriteExtra::create(
-            star,
+            sprite,
             this,
             menu_selector(SFLevelInfoLayer::onSetFeatured)
         );
@@ -256,38 +256,25 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         button->setID("set-featured-button");
 
-        CCNode* lastButton = nullptr;
-
-        auto children = leftMenu->getChildren();
-
-        if (children && children->count() > 0) {
-            lastButton = static_cast<CCNode*>(
-                children->lastObject()
-            );
-        }
-
         leftMenu->addChild(button);
 
-        if (lastButton) {
-            auto position = lastButton->getPosition();
+        button->setPosition({
+            0.f,
+            -50.f
+        });
 
-            button->setPosition({
-                position.x,
-                position.y - 40.f
-            });
-        }
-        else {
-            button->setPosition({ 0.f, 0.f });
-        }
+        button->setLayoutOptions(nullptr);
 
         return true;
     }
 
     void onSetFeatured(CCObject*) {
-        if (!m_fields->level)
+        auto level = m_fields->level;
+
+        if (!level)
             return;
 
-        auto popup = SetFeaturedPopup::create(m_fields->level);
+        auto popup = SetFeaturedPopup::create(level);
 
         if (popup)
             popup->show();
