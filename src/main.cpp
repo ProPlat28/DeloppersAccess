@@ -452,9 +452,13 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
         return true;
     }
 
-    void onElderDelete(CCObject*) {
-        this->onDeleteLevel(nullptr);
-    }
+        void onElderDelete(CCObject*) {
+           FLAlertLayer::create(
+           "Level Deleted",
+           "The level has been removed from the server",
+           "OK"
+       )->show();
+   }
 
     void levelDeleteFailed(int a1) {
         if (
