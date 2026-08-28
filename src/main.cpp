@@ -374,12 +374,6 @@ class $modify(MySupportLayer, SupportLayer) {
     }
 };
 
-class $modify(MyRateStarsLayer, RateStarsLayer) {
-    void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(
-            this->getChildren()->objectAtIndex(0)
-        );
-
         if (layer && layer->getChildrenCount() == 3) {
             auto popup = UploadActionPopup::create(
                 nullptr,
