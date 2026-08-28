@@ -1,4 +1,3 @@
-```cpp
 #include <Geode/Geode.hpp>
 #include <Geode/ui/Popup.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
@@ -8,10 +7,7 @@
 
 using namespace geode::prelude;
 
-
-// ====================
-// SET FEATURED POPUP
-// ====================
+// Devlopper's Set Featured button
 
 class SetFeaturedPopup : public Popup {
 protected:
@@ -239,11 +235,6 @@ public:
     }
 };
 
-
-// ====================
-// SET FEATURED BUTTON
-// ====================
-
 class $modify(SFLevelInfoLayer, LevelInfoLayer) {
     struct Fields {
         GJGameLevel* level = nullptr;
@@ -296,20 +287,12 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
     }
 };
 
-
-// ====================
-// HELPER
-// ====================
-
 template <typename Base, typename T>
 inline bool instanceof(const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-
-// ====================
-// POPUP CALLBACKS
-// ====================
+// Support Layer
 
 class modCheck : public CCObject {
 public:
@@ -334,6 +317,8 @@ public:
         }
     }
 
+// Moderator's Suggest Stars Layer
+
     void DelayRate() {
         auto scene = CCDirector::get()->getRunningScene();
 
@@ -350,11 +335,6 @@ public:
         }
     }
 };
-
-
-// ====================
-// REQUEST ACCESS
-// ====================
 
 class $modify(MySupportLayer, SupportLayer) {
     void onRequestAccess(CCObject* sender) {
@@ -393,11 +373,6 @@ class $modify(MySupportLayer, SupportLayer) {
         }
     }
 };
-
-
-// ====================
-// RATE STARS
-// ====================
 
 class $modify(MyRateStarsLayer, RateStarsLayer) {
     void onRate(CCObject* sender) {
