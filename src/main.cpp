@@ -409,10 +409,10 @@ class $modify(MyRateStarsLayer, RateStarsLayer) {
 
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     void levelDeleteFailed(int a1) {
-        if (
-            Mod::get()->getSettingValue<int64_t>("modType") == 1
-            Mod::get()->getSettingValue<int64_t>("modType") == 2
-        ) {
+       if (
+          Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
+          Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+
             FLAlertLayer::create(
                 "Level Deleted",
                 "The level has been removed from the server",
