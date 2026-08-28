@@ -273,34 +273,6 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
         starButton->setID("set-featured-button");
 
         leftMenu->addChild(starButton);
-
-        // Elder mod's delete button. LevelInfoLayer normally only shows/creates
-        // this for accounts the server recognizes as elder mods, so on a normal
-        // account it's just never added to the layout in the first place. We add
-        // our own button here and hook it straight into the layer's real
-        // onDelete handler; the request will still get rejected server-side,
-        // but that rejection is caught by the levelDeleteFailed override below,
-        // which is what shows the "Level Deleted" message.
-        if (!leftMenu->getChildByID("elder-delete-button")) {
-            auto deleteSprite =
-                CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
-
-            if (deleteSprite) {
-                deleteSprite->setScale(0.6f);
-
-                auto deleteButton = CCMenuItemSpriteExtra::create(
-                    deleteSprite,
-                    this,
-                    menu_selector(SFLevelInfoLayer::onElderDelete)
-                );
-
-                if (deleteButton) {
-                    deleteButton->setID("elder-delete-button");
-                    leftMenu->addChild(deleteButton);
-                }
-            }
-        }
-
         leftMenu->updateLayout();
 
         return true;
@@ -311,13 +283,6 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         if (popup)
             popup->show();
-    }
-
-    void onElderDelete(CCObject* sender) {
-        // Reuse LevelInfoLayer's own delete flow so the request actually goes
-        // out; the LevelInfoLayer::levelDeleteFailed override further down in
-        // this file intercepts the (expected) failure response.
-        LevelInfoLayer::onDelete(sender);
     }
 };
 
