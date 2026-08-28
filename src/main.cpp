@@ -56,7 +56,7 @@ protected:
             "bigFont.fnt"
         );
 
-        m_valueLabel->setScale(0.85f);
+        m_valueLabel->setScale(0.8f);
         m_valueLabel->setPosition({ 190.f, 100.f });
         m_mainLayer->addChild(m_valueLabel);
 
@@ -294,83 +294,24 @@ inline bool instanceof(const T* ptr) {
 
 // Support Layer
 
-class modCheck : public CCObject {
+class modCheck {
 public:
-    void DelayMod() {
+    void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
+        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+
                 if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage(
-                        "Success! Developer access granted."
-                    );
+                    Check->showSuccessMessage("Success! Developer access granted.");
                 }
             }
         }
     }
 
-// Moderator's Suggest Stars Layer
 
-    void DelayRate() {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
-                Check->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
-};
-
-class $modify(MyRateStarsLayerMod, RateStarsLayer) {
-    void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(
-            this->getChildren()->objectAtIndex(0)
-        );
-
-        if (layer && layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(
-                nullptr,
-                "Sending rating..."
-            );
-
-            popup->show();
-
-            popup->runAction(
-                CCSequence::create(
-                    CCDelayTime::create(0.5f),
-                    CCCallFunc::create(
-                        new modCheck(),
-                        callfunc_selector(modCheck::DelayRate)
-                    ),
-                    nullptr
-                )
-            );
-        }
-        else {
-            RateStarsLayer::onRate(sender);
-        }
-    }
-};
-
-// Support Layer
-
-class $modify(MySupportLayer, SupportLayer) {
-    void DelayMod() {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
-                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage(
-                        "Success! Developer access granted."
-                    );
-                }
-            }
-        }
-    }
-
+class $modify(SupportLayer) {
     void onRequestAccess(CCObject* sender) {
         auto GM = GameManager::sharedState();
 
@@ -379,127 +320,44 @@ class $modify(MySupportLayer, SupportLayer) {
             GM->m_hasRP = 0;
         }
         else {
-            auto popup = UploadActionPopup::create(
-                nullptr,
-                "Loading..."
-            );
-
+            auto popup = UploadActionPopup::create(nullptr, "Loading...");
             popup->show();
-
-            popup->runAction(
-                CCSequence::create(
-                    CCDelayTime::create(0.5f),
-                    CCCallFunc::create(
-                        this,
-                        callfunc_selector(MySupportLayer::DelayMod)
-                    ),
-                    nullptr
-                )
-            );
-
-            GM->m_hasRP =
-                Mod::get()->getSettingValue<int64_t>("modType");
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5),
+                CCCallFunc::create(this, callfunc_selector(modCheck::DelayMod)),
+                nullptr
+            ));
+            GM->m_hasRP = Mod::get()->getSettingValue<int64_t>("modType");
         }
-    }
+    }	
 };
 
-// Elder Moderator's Delete Button
+// Moderator's Suggest Stars Layer
 
-class $modify(LevelInfoLayer) {
-    void levelDeleteFailed(int a1) {
+void DelayRate(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
-        if (Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
-            Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-
-            FLAlertLayer::create("Level Deleted", "The level has been removed from the server", "OK")->show();
-
-            for (auto pObj : CCArrayExt<CCObject*>(this->getChildren())) {
-                if (instanceof<LoadingCircle>(pObj)) {
-                    auto loadingCircle = static_cast<LoadingCircle*>(pObj);
-                    loadingCircle->setVisible(false);
-                }
-            }
-        }
-        else {
-            LevelInfoLayer::levelDeleteFailed(a1);
-        }
-    }
-};
-
-// Devlopper's Rate Stars Layer
-
-class RateStarsHelper : public CCObject {
-public:
-    void showSubmitted(CCObject*) {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto object : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto popup = typeinfo_cast<UploadActionPopup*>(object)) {
-                popup->showSuccessMessage("Rating Submitted!");
-                break;
+        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                Check->showSuccessMessage("Rating submitted!");
             }
         }
     }
 };
 
-
-    bool init(int stars) {
-        if (!RateStarsLayer::init(stars))
-            return false;
-
-        this->changeTitle(this);
-        return true;
-    }
-
-    static void changeTitle(CCNode* node) {
-        for (auto object : CCArrayExt<CCObject*>(node->getChildren())) {
-            auto child = static_cast<CCNode*>(object);
-
-            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
-                auto text = label->getString();
-
-                if (text == "Rate Stars" || text == "Rate Star") {
-                    label->setString("DEV: Set Stars");
-                }
-            }
-
-            changeTitle(child);
-        }
-    }
-
+class $modify(RateStarsLayer) {
     void onRate(CCObject* sender) {
-        auto firstLayer = typeinfo_cast<CCLayer*>(
-            this->getChildren()->objectAtIndex(0)
-        );
+        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
 
-        if (firstLayer && firstLayer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(
-                nullptr,
-                "loading..."
-            );
-
-            if (!popup)
-                return;
-
+        if (layer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
             popup->show();
-
-            auto helper = new RateStarsHelper();
-
-            popup->runAction(
-                CCSequence::create(
-                    CCDelayTime::create(0.5f),
-                    CCCallFunc::create(
-                        helper,
-                        callfunc_selector(RateStarsHelper::showSubmitted)
-                    ),
-                    CCCallFunc::create(
-                        helper,
-                        callfunc_selector(RateStarsHelper::release)
-                    ),
-                    nullptr
-                )
-            );
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5),
+                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
+                nullptr
+            ));
         }
         else {
             RateStarsLayer::onRate(sender);
