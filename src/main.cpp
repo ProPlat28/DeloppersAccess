@@ -405,14 +405,62 @@ class $modify(MyRateStarsLayer, RateStarsLayer) {
     }
 };
 
-// Elder Moderator's Delete button
+// Elder Moderator's Delete Button
 
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
-    void levelDeleteFailed(int a1) {
-       if (
-          Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
-          Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+    bool init(GJGameLevel* level, bool challenge) {
+        if (!LevelInfoLayer::init(level, challenge))
+            return false;
 
+        if (
+            Mod::get()->getSettingValue<int64_t>("modType") != 1 &&
+            Mod::get()->getSettingValue<int64_t>("modType") != 2
+        ) {
+            return true;
+        }
+
+        auto menu = getChildByID("left-side-menu");
+
+        if (!menu)
+            return true;
+
+        if (menu->getChildByID("elder-delete-button"))
+            return true;
+
+        auto deleteSprite =
+            CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
+
+        if (!deleteSprite)
+            return true;
+
+        deleteSprite->setScale(0.85f);
+
+        auto deleteButton = CCMenuItemSpriteExtra::create(
+            deleteSprite,
+            this,
+            menu_selector(MyLevelInfoLayer::onElderDelete)
+        );
+
+        if (!deleteButton)
+            return true;
+
+        deleteButton->setID("elder-delete-button");
+
+        menu->addChild(deleteButton);
+        menu->updateLayout();
+
+        return true;
+    }
+
+    void onElderDelete(CCObject*) {
+        this->onDeleteLevel(nullptr);
+    }
+
+    void levelDeleteFailed(int a1) {
+        if (
+            Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
+            Mod::get()->getSettingValue<int64_t>("modType") == 2
+        ) {
             FLAlertLayer::create(
                 "Level Deleted",
                 "The level has been removed from the server",
@@ -435,11 +483,11 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     }
 };
 
-// Devlopper's Rate Demon Layer (Imagined)
+// Devlopper's Rate Stars Layer
 
-class $modify(MyRateDemonLayer, RateDemonLayer) {
+class $modify(MyRateStarsLayer, RateStarsLayer) {
     bool init(int levelID) {
-        if (!RateDemonLayer::init(levelID))
+        if (!RateStarsLayer::init(levelID))
             return false;
 
         for (auto child :
@@ -450,9 +498,9 @@ class $modify(MyRateDemonLayer, RateDemonLayer) {
 
                 if (
                     std::string(label->getString()) ==
-                    "Rate Demon"
+                    "Rate Stars"
                 ) {
-                    label->setString("DEV: Set Demon");
+                    label->setString("DEV: Set Stars");
                     break;
                 }
             }
@@ -464,7 +512,7 @@ class $modify(MyRateDemonLayer, RateDemonLayer) {
     void onRate(CCObject*) {
         auto popup = UploadActionPopup::create(
             nullptr,
-            "Sending Rating..."
+            "Loading..."
         );
 
         popup->show();
@@ -475,7 +523,7 @@ class $modify(MyRateDemonLayer, RateDemonLayer) {
                 CCCallFunc::create(
                     this,
                     callfunc_selector(
-                        MyRateDemonLayer::delayRate
+                        MyRateStarsLayer::delayRate
                     )
                 ),
                 nullptr
