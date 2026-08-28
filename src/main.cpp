@@ -399,35 +399,16 @@ class $modify(LevelInfoLayer) {
 
 // Devlopper's Rate Stars Layer
 
-#include <Geode/Geode.hpp>
-#include <Geode/modify/RateDemonLayer.hpp>
-
-using namespace geode::prelude;
-
-class modCheck : public CCObject {
-public:
-    void DelayRate() {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto popup = typeinfo_cast<UploadActionPopup*>(pObj)) {
-                popup->showSuccessMessage("Rating Submitted!");
-            }
-        }
-    }
-};
-
 class $modify(MyRateDemonLayer, RateDemonLayer) {
-    bool init() {
-        if (!RateDemonLayer::init()) {
+    bool init(int levelID) {
+        if (!RateDemonLayer::init(levelID)) {
             return false;
         }
-    
+
+        // Find and change the title
         for (auto child : CCArrayExt<CCNode*>(this->getChildren())) {
             if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
-                auto text = std::string(label->getString());
-
-                if (text == "Rate Demon") {
+                if (std::string(label->getString()) == "Rate Demon") {
                     label->setString("DEV: Set Demon");
                     break;
                 }
@@ -441,24 +422,23 @@ class $modify(MyRateDemonLayer, RateDemonLayer) {
         auto popup = UploadActionPopup::create(nullptr, "Sending Rating...");
         popup->show();
 
-        popup->runAction(
-            CCSequence::create(
-                CCDelayTime::create(0.5f),
-                CCCallFunc::create(
-                    this,
-                    callfunc_selector(MyRateDemonLayer::DelayRate)
-                ),
-                nullptr
-            )
-        );
+        popup->runAction(CCSequence::create(
+            CCDelayTime::create(0.5f),
+            CCCallFunc::create(
+                this,
+                callfunc_selector(MyRateDemonLayer::delayRate)
+            ),
+            nullptr
+        ));
     }
 
-    void DelayRate() {
+    void delayRate() {
         auto scene = CCDirector::get()->getRunningScene();
 
         for (auto pObj : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto Check = typeinfo_cast<UploadActionPopup*>(pObj)) {
-                Check->showSuccessMessage("Rating Submitted!");
+            if (auto popup = typeinfo_cast<UploadActionPopup*>(pObj)) {
+                popup->showSuccessMessage("Rating Submitted!");
+                break;
             }
         }
     }
