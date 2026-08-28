@@ -526,11 +526,10 @@ class $modify(MyRateStarsLayer, RateStarsLayer) {
             "Sending rating..."
         );
 
-        if (!popup) {
-            RateStarsLayer::onSubmit(sender);
-            return;
-        }
-
+       if (!popup) {
+         return;
+       }
+        
         popup->show();
 
         popup->runAction(
