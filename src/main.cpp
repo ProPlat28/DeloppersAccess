@@ -4,8 +4,6 @@
 
 using namespace geode::prelude;
 
-// Devlopper's Set Featured Popup
-
 class SetFeaturedPopup : public Popup {
 protected:
 GJGameLevel* m_level = nullptr;
@@ -18,8 +16,8 @@ bool init(GJGameLevel* level) {
 
     m_level = level;
 
-    if (level)
-        m_value = level->m_featured;
+    if (m_level)
+        m_value = m_level->m_featured;
 
     if (m_closeBtn)
         m_closeBtn->setVisible(false);
@@ -32,9 +30,7 @@ bool init(GJGameLevel* level) {
         m_mainLayer->addChild(bg, -1);
     }
 
-    auto closeSprite = CCSprite::createWithSpriteFrameName(
-        "GJ_deleteBtn_001.png"
-    );
+    auto closeSprite = CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
 
     if (closeSprite) {
         auto closeButton = CCMenuItemSpriteExtra::create(
@@ -51,10 +47,7 @@ bool init(GJGameLevel* level) {
         }
     }
 
-    auto title = CCLabelBMFont::create(
-        "Set Featured",
-        "bigFont.fnt"
-    );
+    auto title = CCLabelBMFont::create("Set Featured", "bigFont.fnt");
 
     if (title) {
         title->setScale(0.9f);
@@ -244,22 +237,22 @@ void updateValue() {
 }
 
 void onMinus10(CCObject*) {
-    m_value - = 10;
+    m_value -= 10;
     updateValue();
 }
 
 void onMinus1(CCObject*) {
-    --m_value;
+    m_value--;
     updateValue();
 }
 
 void onPlus1(CCObject*) {
-    ++m_value;
+    m_value++;
     updateValue();
 }
 
 void onPlus10(CCObject*) {
-    m_value + = 10;
+    m_value += 10;
     updateValue();
 }
 
@@ -281,8 +274,7 @@ void onSubmit(CCObject* sender) {
 public:
 static SetFeaturedPopup* create(GJGameLevel* level) {
 auto popup = new SetFeaturedPopup();
-
-```
+    
     if (popup->init(level)) {
         popup->autorelease();
         return popup;
@@ -340,14 +332,10 @@ void onSetFeatured(CCObject*) {
     if (!m_fields->level)
         return;
 
-    auto popup = SetFeaturedPopup::create(
-        m_fields->level
-    );
+    auto popup = SetFeaturedPopup::create(m_fields->level);
 
     if (popup)
         popup->show();
 }
 
 };
-
-// Devlopper's Rate Stars Layer
