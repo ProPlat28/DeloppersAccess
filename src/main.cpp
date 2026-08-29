@@ -452,7 +452,7 @@ class $modify(CongratsMenuLayer, MenuLayer) {
                 "You just claimed the RobTop access! Please go to Settings -> Help and click Req!",
                 "OK",
                 nullptr,
-                [](auto, bool {
+                [](auto, bool) {
                 }
             );
         }
