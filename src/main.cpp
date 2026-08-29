@@ -449,8 +449,9 @@ class $modify(CongratsMenuLayer, MenuLayer) {
 
             createQuickPopup(
                 "Congrats",
-                "You just got the RobTop access! Please Go to Settings, after, click Help and then Req to get your full access.",
+                "You just got the RobTop access! Please Go to the Settings, after click Help and than Req to claim your full access.",
                 "OK",
+                nullptr,
                 [](auto, bool) {
                 }
             );
