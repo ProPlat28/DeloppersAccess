@@ -560,14 +560,8 @@ class $modify(RSLHook, RateStarsLayer) {
         attachTarget->addChild(coinMenu, 100);
 
         auto targetSize = attachTarget->getContentSize();
-        float padding = 2.f;
-        float halfW = (coinSize.width * 1.6f) / 2.f;
-        float halfH = (coinSize.height * 1.6f) / 2.f;
 
-        coinBtn->setPosition({
-            padding + halfW,
-            targetSize.height - padding - halfH
-        });
+        coinBtn->setPosition({0.f, targetSize.height});
 
         m_fields->m_coinBtn = coinBtn;
 
