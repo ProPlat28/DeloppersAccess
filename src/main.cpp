@@ -48,7 +48,7 @@ protected:
         auto title =
             CCLabelBMFont::create("Set Featured", "bigFont.fnt");
 
-        title->setScale(0.8f);
+        title->setScale(0.7f);
         title->setPosition({ 190.f, 162.f });
         m_mainLayer->addChild(title);
 
@@ -57,7 +57,7 @@ protected:
             "bigFont.fnt"
         );
 
-        m_valueLabel->setScale(0.7f);
+        m_valueLabel->setScale(0.9f);
         m_valueLabel->setPosition({ 190.f, 100.f });
         m_mainLayer->addChild(m_valueLabel);
 
