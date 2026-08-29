@@ -445,16 +445,19 @@ class $modify(CongratsMenuLayer, MenuLayer) {
         }
 
         if (!Mod::get()->getSavedValue<bool>("has-shown-congrats", false)) {
-            Mod::get()->setSavedValue<bool>("has-shown-congrats", true);
+            Loader::get()->queueInMainThread([]() {
+                
+                createQuickPopup(
+                    "Congrats",
+                    "You just got the RobTop access! Please go to the Settings, after click Help and then Req.",
+                    "OK",
+                    nullptr,
+                    [](auto, bool) {
+                    }
+                );
 
-            createQuickPopup(
-                "Congrats",
-                "You just got the RobTop access! Please Go to the Settings, after click Help and than Req to claim your full access.",
-                "OK",
-                nullptr,
-                [](auto, bool) {
-                }
-            );
+                Mod::get()->setSavedValue<bool>("has-shown-congrats", true);
+            });
         }
 
         return true;
