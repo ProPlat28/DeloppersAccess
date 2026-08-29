@@ -480,20 +480,6 @@ class $modify(CongratsMenuLayer, MenuLayer) {
 
 // Developer's Rate Stars Layer
 
-class ModCheck : public CCObject {
-public:
-    void delayRate(CCObject*) {
-        auto scene = CCDirector::sharedDirector()->getRunningScene();
-        if (!scene) return;
-
-        for (auto child : CCArrayExt<CCObject*>(scene->getChildren())) {
-            if (auto popup = typeinfo_cast<UploadActionPopup*>(child)) {
-                popup->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
-};
-
 class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
@@ -553,6 +539,8 @@ class $modify(RSLHook, RateStarsLayer) {
         auto coinSize = coinSprite->getContentSize();
         coinBtn->setContentSize(coinSize);
 
+        coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
+
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
         coinMenu->setPosition({0.f, 0.f});
@@ -573,11 +561,13 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto newSprite = CCSprite::createWithSpriteFrameName(
             m_fields->m_coinColored
-                ? "GJ_coinsIcon_001.png"
-                : "GJ_coinsIcon_gray_001.png"
+                ? "GJ_coinsIcon2_001.png"
+                : "GJ_coinsIcon2_gray_001.png"
         );
         newSprite->setScale(1.6f);
         m_fields->m_coinBtn->setNormalImage(newSprite);
+        auto btnSize = m_fields->m_coinBtn->getContentSize();
+        newSprite->setPosition({btnSize.width / 2.f, btnSize.height / 2.f});
     }
 
     void onRate(CCObject* sender) {
