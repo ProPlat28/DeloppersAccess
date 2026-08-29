@@ -496,6 +496,11 @@ public:
 
 class $modify(RateStarsLayer) {
 
+    struct Fields {
+        bool m_coinColored = false;
+        CCMenuItemSpriteExtra* m_coinBtn = nullptr;
+    };
+
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
@@ -507,7 +512,37 @@ class $modify(RateStarsLayer) {
             }
         }
 
+        auto coinSprite = CCSprite::create("GJ_coinsIcon_gray_001.png");
+        auto coinBtn = CCMenuItemSpriteExtra::create(
+            coinSprite,
+            this,
+            menu_selector(RateStarsLayer::onToggleDevCoin)
+        );
+
+        auto coinMenu = CCMenu::create();
+        coinMenu->addChild(coinBtn);
+        coinMenu->setPosition({0.f, 0.f});
+        coinMenu->setZOrder(100);
+        root->addChild(coinMenu, 100);
+
+        auto rootSize = root->getContentSize();
+        coinBtn->setPosition({20.f, rootSize.height - 20.f});
+
+        m_fields->m_coinBtn = coinBtn;
+
         return true;
+    }
+
+    void onToggleDevCoin(CCObject*) {
+        m_fields->m_coinColored = !m_fields->m_coinColored;
+
+        auto newSprite = CCSprite::create(
+            m_fields->m_coinColored
+                ? "GJ_coinsIcon_001.png"
+                : "GJ_coinsIcon_gray_001.png"
+        );
+        m_fields->m_coinBtn->setNormalImage(newSprite);
+        m_fields->m_coinBtn->setContentSize(newSprite->getContentSize());
     }
 
     void onRate(CCObject* sender) {
