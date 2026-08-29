@@ -480,22 +480,6 @@ class $modify(CongratsMenuLayer, MenuLayer) {
 
 // Developer's Rate Stars Layer
 
-class modCheck : public CCObject {
-public:
-    void DelayRate(CCObject* sender) {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(
-            static_cast<CCScene*>(scene)->getChildren()
-        )) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
-};
-
 class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
@@ -564,7 +548,7 @@ class $modify(RSLHook, RateStarsLayer) {
         attachTarget->addChild(coinMenu, 100);
 
         auto targetSize = attachTarget->getContentSize();
-
+        
         coinBtn->setPosition({0.f, targetSize.height});
 
         m_fields->m_coinBtn = coinBtn;
@@ -577,8 +561,8 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto newSprite = CCSprite::createWithSpriteFrameName(
             m_fields->m_coinColored
-                ? "GJ_coinsIcon2_001.png"
-                : "GJ_coinsIcon2_gray_001.png"
+                ? "GJ_coinsIcon_001.png"
+                : "GJ_coinsIcon_gray_001.png"
         );
         newSprite->setScale(1.6f);
         m_fields->m_coinBtn->setNormalImage(newSprite);
@@ -590,12 +574,12 @@ class $modify(RSLHook, RateStarsLayer) {
         auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
         popup->show();
 
-        auto checker = new ModCheck();
+        auto checker = new modCheck();
         checker->autorelease();
 
         popup->runAction(CCSequence::create(
             CCDelayTime::create(0.5f),
-            CCCallFunc::create(checker, callfunc_selector(ModCheck::delayRate)),
+            CCCallFunc::create(checker, callfunc_selector(modCheck::DelayRate)),
             nullptr
         ));
     }
