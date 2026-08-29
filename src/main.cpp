@@ -438,14 +438,14 @@ class $modify(LevelInfoLayer) {
 
 // One-time popup
 
-class $modify(HelloMenuLayer, MenuLayer) {
+class $modify(CongratsMenuLayer, MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) {
             return false;
         }
 
-        if (!Mod::get()->getSavedValue<bool>("has-shown-hello-popup", false)) {
-            Mod::get()->setSavedValue("has-shown-hello-popup", true);
+        if (!Mod::get()->getSavedValue<bool>("has-shown-congrats-popup", false)) {
+            Mod::get()->setSavedValue("has-shown-congrats-popup", true);
 
             geode::createQuickPopup(
                 "Congrats",
