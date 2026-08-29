@@ -507,30 +507,37 @@ class $modify(RSLHook, RateStarsLayer) {
         return nullptr;
     }
 
-    static CCMenuItem* findZeroButton(CCNode* node) {
+    static CCLabelBMFont* findLabelWithText(CCNode* node, const std::string& text) {
         auto children = node->getChildren();
         if (!children) return nullptr;
 
         for (auto child : CCArrayExt<CCObject*>(children)) {
             auto childNode = static_cast<CCNode*>(child);
-            if (auto item = typeinfo_cast<CCMenuItem*>(childNode)) {
-                auto itemChildren = item->getChildren();
-                if (itemChildren) {
-                    for (auto ic : CCArrayExt<CCObject*>(itemChildren)) {
-                        if (auto label = typeinfo_cast<CCLabelBMFont*>(static_cast<CCNode*>(ic))) {
-                            if (std::string(label->getString()) == "0") {
-                                return item;
-                            }
-                        }
-                    }
+            if (auto label = typeinfo_cast<CCLabelBMFont*>(childNode)) {
+                if (label->getString() && std::string(label->getString()) == text) {
+                    return label;
                 }
             }
         }
         for (auto child : CCArrayExt<CCObject*>(children)) {
             auto childNode = static_cast<CCNode*>(child);
-            if (auto found = findZeroButton(childNode)) {
+            if (auto found = findLabelWithText(childNode, text)) {
                 return found;
             }
+        }
+        return nullptr;
+    }
+
+    static CCMenuItem* findZeroButton(CCNode* root) {
+        auto label = findLabelWithText(root, "0");
+        if (!label) return nullptr;
+
+        CCNode* p = label->getParent();
+        while (p) {
+            if (auto item = typeinfo_cast<CCMenuItem*>(p)) {
+                return item;
+            }
+            p = p->getParent();
         }
         return nullptr;
     }
@@ -558,15 +565,15 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
         coinSprite->setScale(1.6f);
-        coinSprite->setColor({150, 150, 150});
+        coinSprite->setColor({150, 150, 150}); // gray tint until clicked
 
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
             this,
             menu_selector(RSLHook::onToggleDevCoin)
         );
-        
-        auto coinSize = coinSprite->getContentSize();
+
+        auto coinSize = coinSprite->getContentSize(); // unscaled logical size
         coinBtn->setContentSize(coinSize);
 
         coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
@@ -584,13 +591,19 @@ class $modify(RSLHook, RateStarsLayer) {
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        if (auto zeroBtn = findZeroButton(this)) {
-            auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
-            auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
-            zeroBtn->setPosition(localPos);
-            log::info("RSLHook zeroBtn found, repositioned to {}, {}", localPos.x, localPos.y);
+        if (auto zeroLabel = findLabelWithText(this, "0")) {
+            log::info("RSLHook: found a \"0\" label, parent chain search starting");
+            if (auto zeroBtn = findZeroButton(this)) {
+                auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
+                auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
+                zeroBtn->setPosition(localPos);
+                zeroBtn->setVisible(true);
+                log::info("RSLHook zeroBtn found, repositioned to {}, {}", localPos.x, localPos.y);
+            } else {
+                log::info("RSLHook: \"0\" label found but no CCMenuItem ancestor -- it isn't inside a menu item");
+            }
         } else {
-            log::info("RSLHook zeroBtn not found");
+            log::info("RSLHook: no \"0\" label found anywhere in the popup");
         }
 
         return true;
