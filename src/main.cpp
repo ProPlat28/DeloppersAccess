@@ -511,22 +511,16 @@ class $modify(RateStarsLayer) {
     }
 
     void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+        auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+        popup->show();
 
-        if (layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
-            popup->show();
+        auto checker = new ModCheck();
+        checker->autorelease();
 
-            auto checker = new ModCheck();
-            checker->autorelease();
-
-            popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5f),
-                CCCallFunc::create(checker, callfunc_selector(ModCheck::delayRate)),
-                nullptr
-            ));
-        } else {
-            RateStarsLayer::onRate(sender);
-        }
+        popup->runAction(CCSequence::create(
+            CCDelayTime::create(0.5f),
+            CCCallFunc::create(checker, callfunc_selector(ModCheck::delayRate)),
+            nullptr
+        ));
     }
 };
