@@ -4,6 +4,7 @@
 #include <Geode/modify/SupportLayer.hpp>
 #include <Geode/modify/RateStarsLayer.hpp>
 #include <Geode/modify/RateDemonLayer.hpp>
+#include <Geode/modify/MenuLayer.hpp>
 
 using namespace geode::prelude;
 
@@ -404,7 +405,7 @@ class $modify(RateDemonLayer) {
         auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
         popup->show();
         popup->runAction(CCSequence::create(
-            CCDelayTime::create(1),
+            CCDelayTime::create(0.5),
             CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
             nullptr
         ));
@@ -432,5 +433,30 @@ class $modify(LevelInfoLayer) {
         else {
             LevelInfoLayer::levelDeleteFailed(a1);
         }
+    }
+};
+
+// One-time popup
+
+class $modify(HelloMenuLayer, MenuLayer) {
+    bool init() {
+        if (!MenuLayer::init()) {
+            return false;
+        }
+
+        if (!Mod::get()->getSavedValue<bool>("has-shown-hello-popup", false)) {
+            Mod::get()->setSavedValue("has-shown-hello-popup", true);
+
+            geode::createQuickPopup(
+                "Congrats!",
+                "You just claimed the RobTop access! Please go to Settings -> Support and click Req!",
+                "OK",
+                nullptr,
+                [](auto, bool {
+                }
+            );
+        }
+
+        return true;
     }
 };
