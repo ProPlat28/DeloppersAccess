@@ -549,7 +549,7 @@ class $modify(RSLHook, RateStarsLayer) {
             this,
             menu_selector(RSLHook::onToggleDevCoin)
         );
-        
+
         auto coinSize = coinSprite->getContentSize();
         coinBtn->setContentSize(coinSize);
 
@@ -560,7 +560,7 @@ class $modify(RSLHook, RateStarsLayer) {
         attachTarget->addChild(coinMenu, 100);
 
         auto targetSize = attachTarget->getContentSize();
-        float padding = 6.f;
+        float padding = 2.f;
         float halfW = (coinSize.width * 1.6f) / 2.f;
         float halfH = (coinSize.height * 1.6f) / 2.f;
 
@@ -584,8 +584,6 @@ class $modify(RSLHook, RateStarsLayer) {
         );
         newSprite->setScale(1.6f);
         m_fields->m_coinBtn->setNormalImage(newSprite);
-        // Deliberately NOT calling setContentSize here -- keeping the box size
-        // fixed from creation is what stops the click-triggered nudge.
     }
 
     void onRate(CCObject* sender) {
