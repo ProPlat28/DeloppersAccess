@@ -438,23 +438,20 @@ class $modify(LevelInfoLayer) {
 
 // One-time popup
 
-class $modify(CongratsMenuLayer, MenuLayer) {
+class $modify(MyMenuLayer, MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) {
             return false;
         }
 
-        if (!Mod::get()->getSavedValue<bool>("has-shown-congrats-popup", false)) {
-            Mod::get()->setSavedValue("has-shown-congrats-popup", true);
+        if (!Mod::get()->getSavedValue<bool>("popup-shown", false)) {
+            Mod::get()->setSavedValue<bool>("popup-shown", true);
 
-            geode::createQuickPopup(
+            FLAlertLayer::create(
                 "Congrats",
-                "You just claimed the RobTop access! Please go to Settings -> Help and click Req!",
-                "OK",
-                nullptr,
-                [](auto, bool) {
-                }
-            );
+                "You just got RobTop access! Please Go to Settings, click Help than Req to claim your full access.",
+                "OK"
+            )->show();
         }
 
         return true;
