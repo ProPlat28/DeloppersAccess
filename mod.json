@@ -7,13 +7,13 @@
         "ios": "2.2081"
     },
     "version": "v1.0.0-beta.1",
-    "id": "proplat.devloppers-access",
-    "name": "Devlopper's Access",
+    "id": "proplat.developers-access",
+    "name": "Developer's Access",
     "developer": "ProPlat",
     "description": "This mod gives you the RobTop access! (Cosmetic only)",
     "settings": {
 		"modType": {
-			"name": "Moderator Type",
+			"name": "",
 			"description": "Something",
 			"type": "int",
 			"default": 2,
