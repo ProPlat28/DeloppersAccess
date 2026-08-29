@@ -519,15 +519,31 @@ class $modify(RSLHook, RateStarsLayer) {
             menu_selector(RSLHook::onToggleDevCoin)
         );
         coinBtn->setAnchorPoint({0.f, 1.f});
+        coinBtn->setScale(1.6f);
 
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
         coinMenu->setPosition({0.f, 0.f});
         coinMenu->setZOrder(100);
-        root->addChild(coinMenu, 100);
+        this->addChild(coinMenu, 100);
+
+        auto thisSize = this->getContentSize();
+        coinBtn->setPosition({14.f, thisSize.height - 14.f});
 
         auto rootSize = root->getContentSize();
-        coinBtn->setPosition({14.f, rootSize.height - 14.f});
+        auto labelPos = CCPointZero;
+        for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
+            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
+                labelPos = label->getPosition();
+                break;
+            }
+        }
+        log::info(
+            "RSLHook sizes -> this: {}x{}, root: {}x{}, title label pos: {}, {}",
+            thisSize.width, thisSize.height,
+            rootSize.width, rootSize.height,
+            labelPos.x, labelPos.y
+        );
 
         m_fields->m_coinBtn = coinBtn;
 
@@ -544,6 +560,7 @@ class $modify(RSLHook, RateStarsLayer) {
         );
         m_fields->m_coinBtn->setNormalImage(newSprite);
         m_fields->m_coinBtn->setContentSize(newSprite->getContentSize());
+        m_fields->m_coinBtn->setScale(1.6f);
     }
 
     void onRate(CCObject* sender) {
