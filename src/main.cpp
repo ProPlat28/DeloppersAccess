@@ -8,7 +8,7 @@
 
 using namespace geode::prelude;
 
-// Devlopper's Set Featured button
+// Developer's Set Featured button
 
 class SetFeaturedPopup : public Popup {
 protected:
@@ -48,7 +48,7 @@ protected:
         auto title =
             CCLabelBMFont::create("Set Featured", "bigFont.fnt");
 
-        title->setScale(0.9f);
+        title->setScale(0.8f);
         title->setPosition({ 190.f, 162.f });
         m_mainLayer->addChild(title);
 
@@ -444,19 +444,30 @@ class $modify(CongratsMenuLayer, MenuLayer) {
             return false;
         }
 
-        if (!Mod::get()->getSavedValue<bool>("has-shown-congrats", false)) {
+        log::info("CongratsPopup: MenuLayer::init reached");
+        
+        bool alreadyShown = Mod::get()->getSavedValue<bool>("has-shown-congrats-debug", false);
+        log::info("CongratsPopup: alreadyShown = {}", alreadyShown);
+
+        if (!alreadyShown) {
+            log::info("CongratsPopup: queuing popup for next frame");
+
             Loader::get()->queueInMainThread([]() {
-                
-                createQuickPopup(
+                log::info("CongratsPopup: inside queueInMainThread, about to create popup");
+
+                auto popup = createQuickPopup(
                     "Congrats",
                     "You just got the RobTop access! Please go to the Settings, after click Help and then Req.",
                     "OK",
                     nullptr,
                     [](auto, bool) {
+                        log::info("CongratsPopup: OK pressed");
                     }
                 );
 
-                Mod::get()->setSavedValue<bool>("has-shown-congrats", true);
+                log::info("CongratsPopup: createQuickPopup returned {}", fmt::ptr(popup));
+
+                Mod::get()->setSavedValue<bool>("has-shown-congrats-debug", true);
             });
         }
 
