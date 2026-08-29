@@ -480,6 +480,22 @@ class $modify(CongratsMenuLayer, MenuLayer) {
 
 // Developer's Rate Stars Layer
 
+class modCheck : public CCObject {
+public:
+    void DelayRate(CCObject* sender) {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(
+            static_cast<CCScene*>(scene)->getChildren()
+        )) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+};
+
 class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
