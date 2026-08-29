@@ -57,7 +57,7 @@ protected:
             "bigFont.fnt"
         );
 
-        m_valueLabel->setScale(0.8f);
+        m_valueLabel->setScale(0.7f);
         m_valueLabel->setPosition({ 190.f, 100.f });
         m_mainLayer->addChild(m_valueLabel);
 
