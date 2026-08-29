@@ -498,7 +498,7 @@ class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
         bool m_coinColored = false;
-        CCMenuItemSpriteExtra* m_coinBtn = nullptr;
+        CCMenuItemSprite* m_coinBtn = nullptr;
     };
 
     static CCScale9Sprite* findPanelBg(CCNode* node) {
@@ -544,12 +544,13 @@ class $modify(RSLHook, RateStarsLayer) {
         auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon_gray_001.png");
         coinSprite->setScale(1.6f);
 
-        auto coinBtn = CCMenuItemSpriteExtra::create(
+        auto coinBtn = CCMenuItemSprite::create(
+            coinSprite,
             coinSprite,
             this,
             menu_selector(RSLHook::onToggleDevCoin)
         );
-
+    
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
         coinMenu->setPosition({0.f, 0.f});
@@ -557,7 +558,7 @@ class $modify(RSLHook, RateStarsLayer) {
         attachTarget->addChild(coinMenu, 100);
 
         auto targetSize = attachTarget->getContentSize();
-        auto coinSize = coinSprite->getContentSize(); // unscaled logical size
+        auto coinSize = coinSprite->getContentSize();
         float padding = 16.f;
         float halfW = (coinSize.width * 1.6f) / 2.f;
         float halfH = (coinSize.height * 1.6f) / 2.f;
@@ -582,6 +583,7 @@ class $modify(RSLHook, RateStarsLayer) {
         );
         newSprite->setScale(1.6f);
         m_fields->m_coinBtn->setNormalImage(newSprite);
+        m_fields->m_coinBtn->setSelectedImage(newSprite);
         m_fields->m_coinBtn->setContentSize(newSprite->getContentSize());
     }
 
