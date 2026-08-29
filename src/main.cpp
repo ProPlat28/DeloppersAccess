@@ -564,7 +564,7 @@ class $modify(RSLHook, RateStarsLayer) {
         auto newSprite = CCSprite::createWithSpriteFrameName(
             m_fields->m_coinColored
                 ? "GJ_coinsIcon2_001.png"
-                : "GJ_coinsIcon2_gray_001.png"
+                : "grey-user-coin"
         );
         newSprite->setScale(1.6f);
 
