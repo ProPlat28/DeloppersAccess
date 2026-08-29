@@ -549,7 +549,6 @@ class $modify(RSLHook, RateStarsLayer) {
             this,
             menu_selector(RSLHook::onToggleDevCoin)
         );
-        coinBtn->setAnchorPoint({0.f, 1.f});
 
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
@@ -558,7 +557,15 @@ class $modify(RSLHook, RateStarsLayer) {
         attachTarget->addChild(coinMenu, 100);
 
         auto targetSize = attachTarget->getContentSize();
-        coinBtn->setPosition({14.f, targetSize.height - 14.f});
+        auto coinSize = coinSprite->getContentSize(); // unscaled logical size
+        float padding = 16.f;
+        float halfW = (coinSize.width * 1.6f) / 2.f;
+        float halfH = (coinSize.height * 1.6f) / 2.f;
+
+        coinBtn->setPosition({
+            padding + halfW,
+            targetSize.height - padding - halfH
+        });
 
         m_fields->m_coinBtn = coinBtn;
 
