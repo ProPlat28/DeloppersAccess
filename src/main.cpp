@@ -512,12 +512,13 @@ class $modify(RateStarsLayer) {
             }
         }
 
-        auto coinSprite = CCSprite::create("GJ_coinsIcon_gray_001.png");
+        auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon_gray_001.png");
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
             this,
-            menu_selector(RateStarsLayer::onToggleDevCoin)
+            menu_selector(onToggleDevCoin)
         );
+        coinBtn->setAnchorPoint({0.f, 1.f});
 
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
@@ -526,7 +527,7 @@ class $modify(RateStarsLayer) {
         root->addChild(coinMenu, 100);
 
         auto rootSize = root->getContentSize();
-        coinBtn->setPosition({20.f, rootSize.height - 20.f});
+        coinBtn->setPosition({14.f, rootSize.height - 14.f});
 
         m_fields->m_coinBtn = coinBtn;
 
@@ -536,7 +537,7 @@ class $modify(RateStarsLayer) {
     void onToggleDevCoin(CCObject*) {
         m_fields->m_coinColored = !m_fields->m_coinColored;
 
-        auto newSprite = CCSprite::create(
+        auto newSprite = CCSprite::createWithSpriteFrameName(
             m_fields->m_coinColored
                 ? "GJ_coinsIcon_001.png"
                 : "GJ_coinsIcon_gray_001.png"
