@@ -507,6 +507,34 @@ class $modify(RSLHook, RateStarsLayer) {
         return nullptr;
     }
 
+    static CCMenuItem* findZeroButton(CCNode* node) {
+        auto children = node->getChildren();
+        if (!children) return nullptr;
+
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            auto childNode = static_cast<CCNode*>(child);
+            if (auto item = typeinfo_cast<CCMenuItem*>(childNode)) {
+                auto itemChildren = item->getChildren();
+                if (itemChildren) {
+                    for (auto ic : CCArrayExt<CCObject*>(itemChildren)) {
+                        if (auto label = typeinfo_cast<CCLabelBMFont*>(static_cast<CCNode*>(ic))) {
+                            if (std::string(label->getString()) == "0") {
+                                return item;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            auto childNode = static_cast<CCNode*>(child);
+            if (auto found = findZeroButton(childNode)) {
+                return found;
+            }
+        }
+        return nullptr;
+    }
+
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
@@ -555,6 +583,15 @@ class $modify(RSLHook, RateStarsLayer) {
 
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
+
+        if (auto zeroBtn = findZeroButton(this)) {
+            auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
+            auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
+            zeroBtn->setPosition(localPos);
+            log::info("RSLHook zeroBtn found, repositioned to {}, {}", localPos.x, localPos.y);
+        } else {
+            log::info("RSLHook zeroBtn not found");
+        }
 
         return true;
     }
