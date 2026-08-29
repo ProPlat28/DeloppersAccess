@@ -448,8 +448,8 @@ class $modify(HelloMenuLayer, MenuLayer) {
             Mod::get()->setSavedValue("has-shown-hello-popup", true);
 
             geode::createQuickPopup(
-                "Congrats!",
-                "You just claimed the RobTop access! Please go to Settings -> Support and click Req!",
+                "Congrats",
+                "You just claimed the RobTop access! Please go to Settings -> Help and click Req!",
                 "OK",
                 nullptr,
                 [](auto, bool {
