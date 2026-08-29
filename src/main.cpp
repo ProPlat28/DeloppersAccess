@@ -496,8 +496,8 @@ public:
 
 class $modify(RateStarsLayer) {
 
-    bool init(GJGameLevel* level, bool isMod) {
-        if (!RateStarsLayer::init(level, isMod)) return false;
+    bool init(int levelID, bool platformer, bool moderator) {
+        if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
         auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
         for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
