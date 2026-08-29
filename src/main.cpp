@@ -1,5 +1,8 @@
 #include <Geode/Geode.hpp>
 #include <Geode/ui/Popup.hpp>
+#include <Geode/binding/UploadActionPopup.hpp>
+#include <Geode/binding/CCMenuItemSpriteExtra.hpp>
+#include <Geode/binding/GJGameLevel.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/SupportLayer.hpp>
 #include <Geode/modify/RateStarsLayer.hpp>
@@ -472,5 +475,58 @@ class $modify(CongratsMenuLayer, MenuLayer) {
         }
 
         return true;
+    }
+};
+
+// Developer's Rate Stars Layer
+
+class ModCheck : public CCObject {
+public:
+    void delayRate(CCObject*) {
+        auto scene = CCDirector::sharedDirector()->getRunningScene();
+        if (!scene) return;
+
+        for (auto child : CCArrayExt<CCObject*>(scene->getChildren())) {
+            if (auto popup = typeinfo_cast<UploadActionPopup*>(child)) {
+                popup->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+};
+
+class $modify(RateStarsLayer) {
+
+    bool init(GJGameLevel* level, bool isMod) {
+        if (!RateStarsLayer::init(level, isMod)) return false;
+
+        auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+        for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
+            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
+                label->setString("DEV: Set Stars");
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    void onRate(CCObject* sender) {
+        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+
+        if (layer->getChildrenCount() == 3) {
+            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+            popup->show();
+
+            auto checker = new ModCheck();
+            checker->autorelease();
+
+            popup->runAction(CCSequence::create(
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(checker, callfunc_selector(ModCheck::delayRate)),
+                nullptr
+            ));
+        } else {
+            RateStarsLayer::onRate(sender);
+        }
     }
 };
