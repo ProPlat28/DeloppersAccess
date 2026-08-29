@@ -485,6 +485,7 @@ class $modify(RSLHook, RateStarsLayer) {
     struct Fields {
         bool m_coinColored = false;
         CCMenuItemSpriteExtra* m_coinBtn = nullptr;
+        CCSprite* m_coinSprite = nullptr;
     };
 
     static CCScale9Sprite* findPanelBg(CCNode* node) {
@@ -548,10 +549,11 @@ class $modify(RSLHook, RateStarsLayer) {
         attachTarget->addChild(coinMenu, 100);
 
         auto targetSize = attachTarget->getContentSize();
-        
+
         coinBtn->setPosition({0.f, targetSize.height});
 
         m_fields->m_coinBtn = coinBtn;
+        m_fields->m_coinSprite = coinSprite;
 
         return true;
     }
@@ -565,9 +567,15 @@ class $modify(RSLHook, RateStarsLayer) {
                 : "GJ_coinsIcon_gray_001.png"
         );
         newSprite->setScale(1.6f);
-        m_fields->m_coinBtn->setNormalImage(newSprite);
+
         auto btnSize = m_fields->m_coinBtn->getContentSize();
         newSprite->setPosition({btnSize.width / 2.f, btnSize.height / 2.f});
+
+        if (m_fields->m_coinSprite) {
+            m_fields->m_coinSprite->removeFromParentAndCleanup(true);
+        }
+        m_fields->m_coinBtn->addChild(newSprite);
+        m_fields->m_coinSprite = newSprite;
     }
 
     void onRate(CCObject* sender) {
