@@ -549,7 +549,7 @@ class $modify(RSLHook, RateStarsLayer) {
             this,
             menu_selector(RSLHook::onToggleDevCoin)
         );
-
+        
         auto coinSize = coinSprite->getContentSize();
         coinBtn->setContentSize(coinSize);
 
