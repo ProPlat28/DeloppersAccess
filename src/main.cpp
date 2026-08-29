@@ -528,8 +528,9 @@ class $modify(RSLHook, RateStarsLayer) {
             attachTarget->getContentSize().height
         );
 
-        auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon_gray_001.png");
+        auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
         coinSprite->setScale(1.6f);
+        coinSprite->setColor({150, 150, 150});
 
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
@@ -561,21 +562,11 @@ class $modify(RSLHook, RateStarsLayer) {
     void onToggleDevCoin(CCObject*) {
         m_fields->m_coinColored = !m_fields->m_coinColored;
 
-        auto newSprite = CCSprite::createWithSpriteFrameName(
+        m_fields->m_coinSprite->setColor(
             m_fields->m_coinColored
-                ? "GJ_coinsIcon2_001.png"
-                : "grey-user-coin"
+                ? ccColor3B{255, 255, 255}
+                : ccColor3B{150, 150, 150}
         );
-        newSprite->setScale(1.6f);
-
-        auto btnSize = m_fields->m_coinBtn->getContentSize();
-        newSprite->setPosition({btnSize.width / 2.f, btnSize.height / 2.f});
-
-        if (m_fields->m_coinSprite) {
-            m_fields->m_coinSprite->removeFromParentAndCleanup(true);
-        }
-        m_fields->m_coinBtn->addChild(newSprite);
-        m_fields->m_coinSprite = newSprite;
     }
 
     void onRate(CCObject* sender) {
