@@ -494,7 +494,7 @@ public:
     }
 };
 
-class $modify(RateStarsLayer) {
+class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
         bool m_coinColored = false;
@@ -516,7 +516,7 @@ class $modify(RateStarsLayer) {
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
             this,
-            menu_selector(onToggleDevCoin)
+            menu_selector(RSLHook::onToggleDevCoin)
         );
         coinBtn->setAnchorPoint({0.f, 1.f});
 
