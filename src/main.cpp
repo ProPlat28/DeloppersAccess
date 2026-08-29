@@ -3,6 +3,7 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/SupportLayer.hpp>
 #include <Geode/modify/RateStarsLayer.hpp>
+#include <Geode/modify/RateDemonLayer.hpp>
 
 using namespace geode::prelude;
 
@@ -293,28 +294,34 @@ inline bool instanceof(const T* ptr) {
 
 // Support Layer Success Message
 
-class modCheck {
+class modCheck : public CCObject {
 public:
     void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+        for (auto pObj : CCArrayExt<CCObject*>(
+            static_cast<CCScene*>(scene)->getChildren()
+        )) {
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
-                }
+
                 if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage("Success! Developer access granted.");
+                    Check->showSuccessMessage(
+                        "Success! Developer access granted."
+                    );
                 }
             }
         }
     }
 
-// Rating Submitted! Message
+// Rating Submitted! Fake Message
 
     void DelayRate(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+        for (auto pObj : CCArrayExt<CCObject*>(
+            static_cast<CCScene*>(scene)->getChildren()
+        )) {
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
                 Check->showSuccessMessage("Rating submitted!");
@@ -336,28 +343,51 @@ class $modify(SupportLayer) {
         else {
             auto popup = UploadActionPopup::create(nullptr, "Loading...");
             popup->show();
+
+            auto checker = new modCheck();
+            checker->autorelease();
+
             popup->runAction(CCSequence::create(
-                CCDelayTime::create(1),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayMod)),
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(
+                    checker,
+                    callfunc_selector(modCheck::DelayMod)
+                ),
                 nullptr
             ));
-            GM->m_hasRP = Mod::get()->getSettingValue<int64_t>("modType");
+
+            GM->m_hasRP =
+                Mod::get()->getSettingValue<int64_t>("modType");
         }
-    }	
+    }
 };
+
 
 // Moderator's Suggest Stars Layer
 
 class $modify(RateStarsLayer) {
     void onRate(CCObject* sender) {
-        auto layer = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+        auto layer = static_cast<CCLayer*>(
+            this->getChildren()->objectAtIndex(0)
+        );
 
         if (layer->getChildrenCount() == 3) {
-            auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
+            auto popup = UploadActionPopup::create(
+                nullptr,
+                "Sending rating..."
+            );
+
             popup->show();
+
+            auto checker = new modCheck();
+            checker->autorelease();
+
             popup->runAction(CCSequence::create(
-                CCDelayTime::create(0.5),
-                CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
+                CCDelayTime::create(0.5f),
+                CCCallFunc::create(
+                    checker,
+                    callfunc_selector(modCheck::DelayRate)
+                ),
                 nullptr
             ));
         }
@@ -374,7 +404,7 @@ class $modify(RateDemonLayer) {
         auto popup = UploadActionPopup::create(nullptr, "Sending rating...");
         popup->show();
         popup->runAction(CCSequence::create(
-            CCDelayTime::create(0.5),
+            CCDelayTime::create(1),
             CCCallFunc::create(this, callfunc_selector(modCheck::DelayRate)),
             nullptr
         ));
