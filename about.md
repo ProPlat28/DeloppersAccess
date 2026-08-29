@@ -1,4 +1,4 @@
-# Devlopper's Access
+# Developer's Access
 
 The mod recreates the RobTop access! (Cosmetic Only) NOTE: Not everything will be on the mod because we don't know all about every button.
 
