@@ -24,7 +24,8 @@
     "resources": {
         "sprites": [
             "resources/sf_star_icon.png",
-            "resources/sf_fire_icon.png"
+            "resources/sf_fire_icon.png",
+			"resources/grey-user-coin.png"
         ]
     }
 }
