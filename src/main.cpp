@@ -501,6 +501,25 @@ class $modify(RSLHook, RateStarsLayer) {
         CCMenuItemSpriteExtra* m_coinBtn = nullptr;
     };
 
+    static CCScale9Sprite* findPanelBg(CCNode* node) {
+        auto children = node->getChildren();
+        if (!children) return nullptr;
+
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            auto childNode = static_cast<CCNode*>(child);
+            if (auto s9 = typeinfo_cast<CCScale9Sprite*>(childNode)) {
+                return s9;
+            }
+        }
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            auto childNode = static_cast<CCNode*>(child);
+            if (auto found = findPanelBg(childNode)) {
+                return found;
+            }
+        }
+        return nullptr;
+    }
+
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
@@ -512,38 +531,34 @@ class $modify(RSLHook, RateStarsLayer) {
             }
         }
 
+        auto panelBg = findPanelBg(this);
+        auto attachTarget = panelBg ? static_cast<CCNode*>(panelBg) : static_cast<CCNode*>(root);
+
+        log::info(
+            "RSLHook panelBg found: {}, attach target size: {}x{}",
+            panelBg != nullptr,
+            attachTarget->getContentSize().width,
+            attachTarget->getContentSize().height
+        );
+
         auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon_gray_001.png");
+        coinSprite->setScale(1.6f);
+
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
             this,
             menu_selector(RSLHook::onToggleDevCoin)
         );
         coinBtn->setAnchorPoint({0.f, 1.f});
-        coinBtn->setScale(1.6f);
 
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
         coinMenu->setPosition({0.f, 0.f});
         coinMenu->setZOrder(100);
-        this->addChild(coinMenu, 100);
+        attachTarget->addChild(coinMenu, 100);
 
-        auto thisSize = this->getContentSize();
-        coinBtn->setPosition({14.f, thisSize.height - 14.f});
-
-        auto rootSize = root->getContentSize();
-        auto labelPos = CCPointZero;
-        for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
-            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
-                labelPos = label->getPosition();
-                break;
-            }
-        }
-        log::info(
-            "RSLHook sizes -> this: {}x{}, root: {}x{}, title label pos: {}, {}",
-            thisSize.width, thisSize.height,
-            rootSize.width, rootSize.height,
-            labelPos.x, labelPos.y
-        );
+        auto targetSize = attachTarget->getContentSize();
+        coinBtn->setPosition({14.f, targetSize.height - 14.f});
 
         m_fields->m_coinBtn = coinBtn;
 
@@ -558,9 +573,9 @@ class $modify(RSLHook, RateStarsLayer) {
                 ? "GJ_coinsIcon_001.png"
                 : "GJ_coinsIcon_gray_001.png"
         );
+        newSprite->setScale(1.6f);
         m_fields->m_coinBtn->setNormalImage(newSprite);
         m_fields->m_coinBtn->setContentSize(newSprite->getContentSize());
-        m_fields->m_coinBtn->setScale(1.6f);
     }
 
     void onRate(CCObject* sender) {
