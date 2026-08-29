@@ -438,20 +438,22 @@ class $modify(LevelInfoLayer) {
 
 // One-time popup
 
-class $modify(MyMenuLayer, MenuLayer) {
+class $modify(CongratsMenuLayer, MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) {
             return false;
         }
 
-        if (!Mod::get()->getSavedValue<bool>("popup-shown", false)) {
-            Mod::get()->setSavedValue<bool>("popup-shown", true);
+        if (!Mod::get()->getSavedValue<bool>("has-shown-congrats", false)) {
+            Mod::get()->setSavedValue<bool>("has-shown-congrats", true);
 
-            FLAlertLayer::create(
+            createQuickPopup(
                 "Congrats",
-                "You just got RobTop access! Please Go to Settings, click Help than Req to claim your full access.",
-                "OK"
-            )->show();
+                "You just got the RobTop access! Please Go to Settings, after, click Help and then Req to get your full access.",
+                "OK",
+                [](auto, bool) {
+                }
+            );
         }
 
         return true;
