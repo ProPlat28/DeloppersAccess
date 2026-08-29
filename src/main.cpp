@@ -48,7 +48,7 @@ protected:
         auto title =
             CCLabelBMFont::create("Set Featured", "bigFont.fnt");
 
-        title->setScale(0.7f);
+        title->setScale(0.9f);
         title->setPosition({ 190.f, 162.f });
         m_mainLayer->addChild(title);
 
@@ -77,7 +77,7 @@ protected:
                 return;
 
             sprite->setRotation(rotation);
-            sprite->setScale(0.95f);
+            sprite->setScale(0.9f);
 
             auto button = CCMenuItemSpriteExtra::create(
                 sprite,
