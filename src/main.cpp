@@ -336,7 +336,7 @@ inline bool instanceof(const T* ptr) {
 
 class modCheck : public CCObject {
 public:
-    void DelayRate(CCObject* sender) {
+    void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
         for (auto pObj : CCArrayExt<CCObject*>(
@@ -364,7 +364,6 @@ public:
             }
         }
     }
-};
 
 // Support Layer Loading Message
 
