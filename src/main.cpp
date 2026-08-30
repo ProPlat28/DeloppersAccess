@@ -505,7 +505,19 @@ class $modify(RSLHook, RateStarsLayer) {
         }
     }
 
-    static CCScale9Sprite* findPanelBg(CCNode* node) {
+    static void dumpTreeToString(CCNode* node, int depth, std::string& out, int maxDepth) {
+        if (!node || depth > maxDepth) return;
+        for (int i = 0; i < depth; i++) out += " ";
+        out += typeid(*node).name();
+        out += " (" + std::to_string((int)node->getPosition().x)
+             + "," + std::to_string((int)node->getPosition().y) + ")\n";
+
+        auto children = node->getChildren();
+        if (!children) return;
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            dumpTreeToString(static_cast<CCNode*>(child), depth + 1, out, maxDepth);
+        }
+    }
         auto children = node->getChildren();
         if (!children) return nullptr;
 
@@ -561,6 +573,23 @@ class $modify(RSLHook, RateStarsLayer) {
 
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
+
+        log::info("RSLHook: ---- dumping native node tree ----");
+        dumpTree(this);
+        log::info("RSLHook: ---- end dump ----");
+
+        std::string debugText;
+        dumpTreeToString(this, 0, debugText, 3);
+        if (debugText.size() > 700) {
+            debugText = debugText.substr(0, 700) + "\n...(truncated)";
+        }
+        auto debugLabel = CCLabelBMFont::create(debugText.c_str(), "chatFont.fnt");
+        debugLabel->setAnchorPoint({0.f, 1.f});
+        debugLabel->setScale(0.32f);
+        auto winSize = CCDirector::sharedDirector()->getWinSize();
+        debugLabel->setPosition({4.f, winSize.height - 4.f});
+        debugLabel->setZOrder(9999);
+        this->addChild(debugLabel, 9999);
 
         auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
         for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
