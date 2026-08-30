@@ -332,11 +332,11 @@ inline bool instanceof(const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-// Support Layer Success Message
+// Rating Submitted! Fake Message
 
 class modCheck : public CCObject {
 public:
-     void DelayMod(CCObject* sender) {
+    void DelayRate(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
         for (auto pObj : CCArrayExt<CCObject*>(
@@ -344,26 +344,12 @@ public:
         )) {
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Success! Developer access granted.");
+                Check->showSuccessMessage("Rating submitted!");
             }
         }
     }
-};
 
-// Rating Submitted! Fake Message
-
-void DelayRate(CCObject* sender) {
-    auto scene = CCDirector::get()->getRunningScene();
-
-    for (auto pObj : CCArrayExt<CCObject*>(
-        static_cast<CCScene*>(scene)->getChildren()
-        )) {
-        if (instanceof<UploadActionPopup>(pObj)) {
-            auto Check = static_cast<UploadActionPopup*>(pObj);
-            Check->showSuccessMessage("Rating submitted!");
-            }
-        }
-    }
+// Support Layer Success Message
 
     void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
