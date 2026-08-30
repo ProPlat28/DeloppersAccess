@@ -488,38 +488,6 @@ class $modify(RSLHook, RateStarsLayer) {
         CCSprite* m_coinSprite = nullptr;
     };
 
-    static void dumpTree(CCNode* node, int depth = 0) {
-        if (!node) return;
-        std::string indent(depth * 2, ' ');
-        log::info(
-            "{}{} pos=({:.1f},{:.1f}) size=({:.1f},{:.1f})",
-            indent,
-            typeid(*node).name(),
-            node->getPosition().x, node->getPosition().y,
-            node->getContentSize().width, node->getContentSize().height
-        );
-        auto children = node->getChildren();
-        if (!children) return;
-        for (auto child : CCArrayExt<CCObject*>(children)) {
-            dumpTree(static_cast<CCNode*>(child), depth + 1);
-        }
-    }
-
-    static void dumpTreeToString(CCNode* node, int depth, std::string& out, int maxDepth) {
-        if (!node || depth > maxDepth) return;
-        for (int i = 0; i < depth; i++) out += " ";
-        out += typeid(*node).name();
-        out += " (" + std::to_string((int)node->getPosition().x)
-             + "," + std::to_string((int)node->getPosition().y) + ")\n";
-
-        if (typeinfo_cast<CCLabelBMFont*>(node)) return;
-
-        auto children = node->getChildren();
-        if (!children) return;
-        for (auto child : CCArrayExt<CCObject*>(children)) {
-            dumpTreeToString(static_cast<CCNode*>(child), depth + 1, out, maxDepth);
-        }
-    }
     static CCScale9Sprite* findPanelBg(CCNode* node) {
         auto children = node->getChildren();
         if (!children) return nullptr;
@@ -577,23 +545,6 @@ class $modify(RSLHook, RateStarsLayer) {
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
-        log::info("RSLHook: ---- dumping native node tree ----");
-        dumpTree(this);
-        log::info("RSLHook: ---- end dump ----");
-
-        std::string debugText;
-        dumpTreeToString(this, 0, debugText, 5);
-        if (debugText.size() > 1400) {
-            debugText = debugText.substr(0, 1400) + "\n...(truncated)";
-        }
-        auto debugLabel = CCLabelBMFont::create(debugText.c_str(), "chatFont.fnt");
-        debugLabel->setAnchorPoint({0.f, 1.f});
-        debugLabel->setScale(0.24f);
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
-        debugLabel->setPosition({4.f, winSize.height - 4.f});
-        debugLabel->setZOrder(9999);
-        this->addChild(debugLabel, 9999);
-
         auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
         for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
             if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
@@ -604,13 +555,7 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto panelBg = findPanelBg(this);
         auto attachTarget = panelBg ? static_cast<CCNode*>(panelBg) : static_cast<CCNode*>(root);
-
-        log::info(
-            "RSLHook panelBg found: {}, attach target size: {}x{}",
-            panelBg != nullptr,
-            attachTarget->getContentSize().width,
-            attachTarget->getContentSize().height
-        );
+        auto targetSize = attachTarget->getContentSize();
 
         auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
         coinSprite->setScale(1.6f);
@@ -624,8 +569,8 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto coinSize = coinSprite->getContentSize();
         coinBtn->setContentSize(coinSize);
-
         coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
+        coinBtn->setPosition({0.f, targetSize.height});
 
         auto coinMenu = CCMenu::create();
         coinMenu->addChild(coinBtn);
@@ -633,26 +578,13 @@ class $modify(RSLHook, RateStarsLayer) {
         coinMenu->setZOrder(100);
         attachTarget->addChild(coinMenu, 100);
 
-        auto targetSize = attachTarget->getContentSize();
-
-        coinBtn->setPosition({0.f, targetSize.height});
-
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        if (auto zeroLabel = findLabelWithText(this, "0")) {
-            log::info("RSLHook: found a \"0\" label, parent chain search starting");
-            if (auto zeroBtn = findZeroButton(this)) {
-                auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
-                auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
-                zeroBtn->setPosition(localPos);
-                zeroBtn->setVisible(true);
-                log::info("RSLHook zeroBtn found, repositioned to {}, {}", localPos.x, localPos.y);
-            } else {
-                log::info("RSLHook: \"0\" label found but no CCMenuItem ancestor -- it isn't inside a menu item");
-            }
-        } else {
-            log::info("RSLHook: no \"0\" label found anywhere in the popup");
+        if (auto zeroBtn = findZeroButton(this)) {
+            auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
+            auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
+            zeroBtn->setPosition(localPos);
         }
 
         return true;
