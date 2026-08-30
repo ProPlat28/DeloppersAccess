@@ -336,7 +336,7 @@ inline bool instanceof(const T* ptr) {
 
 class modCheck : public CCObject {
 public:
-    void DelayMod(CCObject* sender) {
+     void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
         for (auto pObj : CCArrayExt<CCObject*>(
@@ -352,7 +352,20 @@ public:
 
 // Rating Submitted! Fake Message
 
-    void DelayRate(CCObject* sender) {
+void DelayRate(CCObject* sender) {
+    auto scene = CCDirector::get()->getRunningScene();
+
+    for (auto pObj : CCArrayExt<CCObject*>(
+        static_cast<CCScene*>(scene)->getChildren()
+        )) {
+        if (instanceof<UploadActionPopup>(pObj)) {
+            auto Check = static_cast<UploadActionPopup*>(pObj);
+            Check->showSuccessMessage("Rating submitted!");
+            }
+        }
+    }
+
+    void DelayMod(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
         for (auto pObj : CCArrayExt<CCObject*>(
@@ -360,10 +373,11 @@ public:
         )) {
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
-                Check->showSuccessMessage("Rating submitted!");
+                Check->showSuccessMessage("Success! Developer access granted.");
             }
         }
     }
+};
 
 // Support Layer Loading Message
 
