@@ -546,7 +546,7 @@ class $modify(RSLHook, RateStarsLayer) {
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        auto zeroSprite = ButtonSprite::create("0", 40, false, "bigFont.fnt", "GJ_button_04.png", 40.f, 1.f);
+        auto zeroSprite = ButtonSprite::create("0", 30, false, "bigFont.fnt", "GJ_button_04.png", 36.f, 1.f);
 
         auto zeroBtn = CCMenuItemSpriteExtra::create(
             zeroSprite,
