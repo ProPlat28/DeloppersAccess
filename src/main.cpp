@@ -546,20 +546,13 @@ class $modify(RSLHook, RateStarsLayer) {
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        auto zeroBg = CCScale9Sprite::create("GJ_button_02.png", {0.f, 0.f, 40.f, 40.f});
-        zeroBg->setContentSize({40.f, 40.f});
-
-        auto zeroLabel = CCLabelBMFont::create("0", "bigFont.fnt");
-        zeroLabel->setScale(0.9f);
-        zeroLabel->setPosition({20.f, 20.f});
-        zeroBg->addChild(zeroLabel);
+        auto zeroSprite = ButtonSprite::create("0");
 
         auto zeroBtn = CCMenuItemSpriteExtra::create(
-            zeroBg,
+            zeroSprite,
             this,
             menu_selector(RSLHook::onDevZeroClicked)
         );
-        zeroBtn->setContentSize({40.f, 40.f});
         zeroBtn->setPosition({targetSize.width, targetSize.height});
 
         coinMenu->addChild(zeroBtn);
