@@ -193,8 +193,8 @@ protected:
             menu_selector(SetFeaturedPopup::onToggleEpicColor)
         );
         auto epicSize = epicToggleSprite->getContentSize();
-        epicToggleButton->setContentSize(epicSize);
         epicToggleSprite->setPosition({ epicSize.width / 2.f, epicSize.height / 2.f });
+        epicToggleButton->setContentSize({ epicSize.width * 0.6f, epicSize.height * 0.6f });
 
         auto epicToggleMenu = CCMenu::create();
         epicToggleMenu->addChild(epicToggleButton);
