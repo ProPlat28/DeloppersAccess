@@ -488,6 +488,23 @@ class $modify(RSLHook, RateStarsLayer) {
         CCSprite* m_coinSprite = nullptr;
     };
 
+    static void dumpTree(CCNode* node, int depth = 0) {
+        if (!node) return;
+        std::string indent(depth * 2, ' ');
+        log::info(
+            "{}{} pos=({:.1f},{:.1f}) size=({:.1f},{:.1f})",
+            indent,
+            typeid(*node).name(),
+            node->getPosition().x, node->getPosition().y,
+            node->getContentSize().width, node->getContentSize().height
+        );
+        auto children = node->getChildren();
+        if (!children) return;
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            dumpTree(static_cast<CCNode*>(child), depth + 1);
+        }
+    }
+
     static CCScale9Sprite* findPanelBg(CCNode* node) {
         auto children = node->getChildren();
         if (!children) return nullptr;
@@ -565,7 +582,7 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
         coinSprite->setScale(1.6f);
-        coinSprite->setColor({150, 150, 150}); // gray tint until clicked
+        coinSprite->setColor({150, 150, 150});
 
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
@@ -573,7 +590,7 @@ class $modify(RSLHook, RateStarsLayer) {
             menu_selector(RSLHook::onToggleDevCoin)
         );
 
-        auto coinSize = coinSprite->getContentSize(); // unscaled logical size
+        auto coinSize = coinSprite->getContentSize();
         coinBtn->setContentSize(coinSize);
 
         coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
