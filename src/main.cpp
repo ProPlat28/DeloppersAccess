@@ -424,7 +424,7 @@ class $modify(LevelInfoLayer) {
         if (Mod::get()->getSettingValue<int64_t>("modType") == 1 ||
             Mod::get()->getSettingValue<int64_t>("modType") == 2) {
 
-            FLAlertLayer::create("Level Deleted", "The level has been removed from the server", "OK")->show();
+            FLAlertLayer::create("Level Deleted", "The level has been removed from the server.", "OK")->show();
 
             for (auto pObj : CCArrayExt<CCObject*>(this->getChildren())) {
                 if (instanceof<LoadingCircle>(pObj)) {
@@ -547,15 +547,13 @@ class $modify(RSLHook, RateStarsLayer) {
             m_fields->m_coinBtn = coinBtn;
             m_fields->m_coinSprite = coinSprite;
 
-            auto zeroSprite = ButtonSprite::create("0", 36, false, "bigFont.fnt", "GJ_button_04.png", 30.f, 0.5f);
-            zeroSprite->setScale(0.7f);
+            auto zeroSprite = ButtonSprite::create("0", 30, false, "bigFont.fnt", "GJ_button_04.png", 36.f, 0.5f);
 
             auto zeroBtn = CCMenuItemSpriteExtra::create(
                 zeroSprite,
                 this,
                 menu_selector(RSLHook::onDevZeroClicked)
             );
-            zeroBtn->setContentSize({30.f, 36.f});
             zeroBtn->setPosition({targetSize.width, targetSize.height});
 
             coinMenu->addChild(zeroBtn);
