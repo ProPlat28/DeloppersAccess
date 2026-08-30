@@ -242,6 +242,8 @@ public:
 class $modify(SFLevelInfoLayer, LevelInfoLayer) {
     struct Fields {
         GJGameLevel* level = nullptr;
+        bool epicColored = false;
+        CCSprite* epicSprite = nullptr;
     };
 
     bool init(GJGameLevel* level, bool challenge) {
@@ -255,29 +257,48 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
         if (!leftMenu)
             return true;
 
-        if (leftMenu->getChildByID("set-featured-button"))
-            return true;
+        if (!leftMenu->getChildByID("set-featured-button")) {
+            auto starSprite =
+                CCSprite::create("sf_star_icon.png"_spr);
 
-        auto starSprite =
-            CCSprite::create("sf_star_icon.png"_spr);
+            if (starSprite) {
+                starSprite->setScale(0.6f);
 
-        if (!starSprite)
-            return true;
+                auto starButton = CCMenuItemSpriteExtra::create(
+                    starSprite,
+                    this,
+                    menu_selector(SFLevelInfoLayer::onSetFeatured)
+                );
 
-        starSprite->setScale(0.6f);
+                if (starButton) {
+                    starButton->setID("set-featured-button");
+                    leftMenu->addChild(starButton);
+                }
+            }
+        }
 
-        auto starButton = CCMenuItemSpriteExtra::create(
-            starSprite,
-            this,
-            menu_selector(SFLevelInfoLayer::onSetFeatured)
-        );
+        if (!leftMenu->getChildByID("set-epic-button")) {
+            auto epicSprite =
+                CCSprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
 
-        if (!starButton)
-            return true;
+            if (epicSprite) {
+                epicSprite->setScale(0.6f);
+                epicSprite->setColor({60, 60, 60});
 
-        starButton->setID("set-featured-button");
+                auto epicButton = CCMenuItemSpriteExtra::create(
+                    epicSprite,
+                    this,
+                    menu_selector(SFLevelInfoLayer::onToggleEpic)
+                );
 
-        leftMenu->addChild(starButton);
+                if (epicButton) {
+                    epicButton->setID("set-epic-button");
+                    leftMenu->addChild(epicButton);
+                    m_fields->epicSprite = epicSprite;
+                }
+            }
+        }
+
         leftMenu->updateLayout();
 
         return true;
@@ -288,6 +309,18 @@ class $modify(SFLevelInfoLayer, LevelInfoLayer) {
 
         if (popup)
             popup->show();
+    }
+
+    void onToggleEpic(CCObject*) {
+        m_fields->epicColored = !m_fields->epicColored;
+
+        if (m_fields->epicSprite) {
+            m_fields->epicSprite->setColor(
+                m_fields->epicColored
+                    ? ccColor3B{255, 255, 255}
+                    : ccColor3B{60, 60, 60}
+            );
+        }
     }
 };
 
