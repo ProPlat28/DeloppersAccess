@@ -479,7 +479,6 @@ class $modify(CongratsMenuLayer, MenuLayer) {
 };
 
 // Developer's Rate Stars Layer
-
 class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
@@ -546,7 +545,8 @@ class $modify(RSLHook, RateStarsLayer) {
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        auto zeroSprite = ButtonSprite::create("0", 36, false, "bigFont.fnt", "GJ_button_04.png", 30.f, 0.7f);
+        auto zeroSprite = ButtonSprite::create("0", 36, false, "bigFont.fnt", "GJ_button_04.png", 30.f, 1.f);
+        zeroSprite->getLabel()->setScale(0.5f);
 
         auto zeroBtn = CCMenuItemSpriteExtra::create(
             zeroSprite,
