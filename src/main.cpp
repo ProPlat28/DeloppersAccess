@@ -15,186 +15,193 @@ using namespace geode::prelude;
 
 class SetFeaturedPopup : public Popup {
 protected:
-    GJGameLevel* m_level = nullptr;
-    int m_value = 0;
-    CCLabelBMFont* m_valueLabel = nullptr;
-    bool m_epicColored = false;
-    CCSprite* m_epicToggleSprite = nullptr;
+GJGameLevel* m_level = nullptr;
+int m_value = 0;
+CCLabelBMFont* m_valueLabel = nullptr;
+bool m_epicColored = false;
+CCSprite* m_epicToggleSprite = nullptr;
 
-    bool init(GJGameLevel* level) {
-        if (!Popup::init(380.f, 180.f))
-            return false;
+bool init(GJGameLevel* level) {
+    if (!Popup::init(380.f, 180.f))
+        return false;
 
-        m_level = level;
-        m_value = level ? level->m_featured : 0;
+    m_level = level;
+    m_value = level ? level->m_featured : 0;
 
-        if (m_closeBtn)
-            m_closeBtn->setVisible(false);
+    if (m_closeBtn)
+        m_closeBtn->setVisible(false);
 
-        auto bg = CCScale9Sprite::create("GJ_square01.png");
-        bg->setContentSize({ 380.f, 180.f });
-        bg->setPosition({ 190.f, 90.f });
-        m_mainLayer->addChild(bg, -1);
+    auto bg = CCScale9Sprite::create("GJ_square01.png");
+    bg->setContentSize({ 380.f, 180.f });
+    bg->setPosition({ 190.f, 90.f });
+    m_mainLayer->addChild(bg, -1);
 
-        auto closeSprite =
-            CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
+    auto closeSprite =
+        CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png");
 
-        auto closeButton = CCMenuItemSpriteExtra::create(
-            closeSprite,
+    auto closeButton = CCMenuItemSpriteExtra::create(
+        closeSprite,
+        this,
+        menu_selector(SetFeaturedPopup::onClose)
+    );
+
+    auto closeMenu = CCMenu::create();
+    closeMenu->addChild(closeButton);
+    closeMenu->setPosition({ 378.f, 182.f });
+    m_mainLayer->addChild(closeMenu);
+
+    auto title =
+        CCLabelBMFont::create("Set Featured", "bigFont.fnt");
+
+    title->setScale(0.9f);
+    title->setPosition({ 190.f, 162.f });
+    m_mainLayer->addChild(title);
+
+    m_valueLabel = CCLabelBMFont::create(
+        std::to_string(m_value).c_str(),
+        "bigFont.fnt"
+    );
+
+    m_valueLabel->setScale(0.9f);
+    m_valueLabel->setPosition({ 190.f, 100.f });
+    m_mainLayer->addChild(m_valueLabel);
+
+    auto arrows = CCMenu::create();
+    arrows->setPosition({ 0.f, 0.f });
+
+    auto addArrow = [&](
+        char const* frame,
+        float rotation,
+        SEL_MenuHandler callback,
+        float x
+    ) {
+        auto sprite =
+            CCSprite::createWithSpriteFrameName(frame);
+
+        if (!sprite)
+            return;
+
+        sprite->setRotation(rotation);
+        sprite->setScale(0.9f);
+
+        auto button = CCMenuItemSpriteExtra::create(
+            sprite,
             this,
-            menu_selector(SetFeaturedPopup::onClose)
+            callback
         );
 
-        auto closeMenu = CCMenu::create();
-        closeMenu->addChild(closeButton);
-        closeMenu->setPosition({ 378.f, 182.f });
-        m_mainLayer->addChild(closeMenu);
+        if (!button)
+            return;
 
-        auto title =
-            CCLabelBMFont::create("Set Featured", "bigFont.fnt");
+        button->setPosition({ x, 100.f });
+        arrows->addChild(button);
+    };
 
-        title->setScale(0.9f);
-        title->setPosition({ 190.f, 162.f });
-        m_mainLayer->addChild(title);
+    addArrow(
+        "GJ_arrow_01_001.png",
+        -90.f,
+        menu_selector(SetFeaturedPopup::onMinus10),
+        32.f
+    );
 
-        m_valueLabel = CCLabelBMFont::create(
-            std::to_string(m_value).c_str(),
-            "bigFont.fnt"
-        );
+    addArrow(
+        "GJ_arrow_02_001.png",
+        -90.f,
+        menu_selector(SetFeaturedPopup::onMinus1),
+        84.f
+    );
 
-        m_valueLabel->setScale(0.9f);
-        m_valueLabel->setPosition({ 190.f, 100.f });
-        m_mainLayer->addChild(m_valueLabel);
+    addArrow(
+        "GJ_arrow_02_001.png",
+        90.f,
+        menu_selector(SetFeaturedPopup::onPlus1),
+        296.f
+    );
 
-        auto arrows = CCMenu::create();
-        arrows->setPosition({ 0.f, 0.f });
+    addArrow(
+        "GJ_arrow_01_001.png",
+        90.f,
+        menu_selector(SetFeaturedPopup::onPlus10),
+        348.f
+    );
 
-        auto addArrow = [&](
-            char const* frame,
-            float rotation,
-            SEL_MenuHandler callback,
-            float x
-        ) {
-            auto sprite =
-                CCSprite::createWithSpriteFrameName(frame);
+    m_mainLayer->addChild(arrows);
 
-            if (!sprite)
-                return;
+    auto buttons = CCMenu::create();
+    buttons->setPosition({ 190.f, 25.f });
 
-            sprite->setRotation(rotation);
-            sprite->setScale(0.9f);
+    auto cancelSprite = ButtonSprite::create(
+        "Cancel",
+        "goldFont.fnt",
+        "GJ_button_01.png"
+    );
 
-            auto button = CCMenuItemSpriteExtra::create(
-                sprite,
-                this,
-                callback
-            );
+    auto cancelButton = CCMenuItemSpriteExtra::create(
+        cancelSprite,
+        this,
+        menu_selector(SetFeaturedPopup::onCancel)
+    );
 
-            if (!button)
-                return;
+    cancelButton->setPosition({ -60.f, 0.f });
+    buttons->addChild(cancelButton);
 
-            button->setPosition({ x, 100.f });
-            arrows->addChild(button);
-        };
+    auto submitSprite = ButtonSprite::create(
+        "Submit",
+        "goldFont.fnt",
+        "GJ_button_01.png"
+    );
 
-        addArrow(
-            "GJ_arrow_01_001.png",
-            -90.f,
-            menu_selector(SetFeaturedPopup::onMinus10),
-            32.f
-        );
+    auto submitButton = CCMenuItemSpriteExtra::create(
+        submitSprite,
+        this,
+        menu_selector(SetFeaturedPopup::onSubmit)
+    );
 
-        addArrow(
-            "GJ_arrow_02_001.png",
-            -90.f,
-            menu_selector(SetFeaturedPopup::onMinus1),
-            84.f
-        );
+    submitButton->setPosition({ 60.f, 0.f });
+    buttons->addChild(submitButton);
 
-        addArrow(
-            "GJ_arrow_02_001.png",
-            90.f,
-            menu_selector(SetFeaturedPopup::onPlus1),
-            296.f
-        );
+    m_mainLayer->addChild(buttons);
 
-        addArrow(
-            "GJ_arrow_01_001.png",
-            90.f,
-            menu_selector(SetFeaturedPopup::onPlus10),
-            348.f
-        );
+    auto epicMenu = CCMenu::create();
+    epicMenu->setPosition({ 350.f, 25.f });
 
-        m_mainLayer->addChild(arrows);
+    auto epicSprite = ButtonSprite::create(
+        "Epic\nOnly",
+        "goldFont.fnt",
+        "GJ_button_01.png"
+    );
 
-        auto buttons = CCMenu::create();
-        buttons->setPosition({ 190.f, 25.f });
+    epicSprite->setScale(0.45f);
 
-        auto cancelSprite = ButtonSprite::create(
-            "Cancel",
-            "goldFont.fnt",
-            "GJ_button_01.png"
-        );
+    auto epicButton = CCMenuItemSpriteExtra::create(
+        epicSprite,
+        this,
+        menu_selector(SetFeaturedPopup::onEpicOnly)
+    );
 
-        auto cancelButton = CCMenuItemSpriteExtra::create(
-            cancelSprite,
-            this,
-            menu_selector(SetFeaturedPopup::onCancel)
-        );
+    epicMenu->addChild(epicButton);
+    m_mainLayer->addChild(epicMenu);
 
-        cancelButton->setPosition({ -60.f, 0.f });
-        buttons->addChild(cancelButton);
+    auto epicToggleSprite =
+        CCSprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
 
-        auto submitSprite = ButtonSprite::create(
-            "Submit",
-            "goldFont.fnt",
-            "GJ_button_01.png"
-        );
-
-        auto submitButton = CCMenuItemSpriteExtra::create(
-            submitSprite,
-            this,
-            menu_selector(SetFeaturedPopup::onSubmit)
-        );
-
-        submitButton->setPosition({ 60.f, 0.f });
-        buttons->addChild(submitButton);
-
-        m_mainLayer->addChild(buttons);
-
-        auto epicMenu = CCMenu::create();
-        epicMenu->setPosition({ 350.f, 25.f });
-
-        auto epicSprite = ButtonSprite::create(
-            "Epic\nOnly",
-            "goldFont.fnt",
-            "GJ_button_01.png"
-        );
-
-        epicSprite->setScale(0.45f);
-
-        auto epicButton = CCMenuItemSpriteExtra::create(
-            epicSprite,
-            this,
-            menu_selector(SetFeaturedPopup::onEpicOnly)
-        );
-
-        epicMenu->addChild(epicButton);
-        m_mainLayer->addChild(epicMenu);
-
-        auto epicToggleSprite =
-            CCSprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
-        epicToggleSprite->setScale(1f);
-        epicToggleSprite->setColor({60, 60, 60});
+    if (epicToggleSprite) {
+        epicToggleSprite->setScale(1.0f);
+        epicToggleSprite->setColor({ 60, 60, 60 });
 
         auto epicToggleButton = CCMenuItemSpriteExtra::create(
             epicToggleSprite,
             this,
             menu_selector(SetFeaturedPopup::onToggleEpicColor)
         );
+
         auto epicSize = epicToggleSprite->getContentSize();
+
         epicToggleButton->setContentSize(epicSize);
-        epicToggleSprite->setPosition({ epicSize.width / 2.f, epicSize.height / 2.f });
+        epicToggleSprite->setPosition({
+            epicSize.width / 2.f,
+            epicSize.height / 2.f
+        });
 
         auto epicToggleMenu = CCMenu::create();
         epicToggleMenu->addChild(epicToggleButton);
@@ -202,135 +209,159 @@ protected:
         m_mainLayer->addChild(epicToggleMenu);
 
         epicToggleButton->setPosition({ 0.f, 180.f });
+
         m_epicToggleSprite = epicToggleSprite;
-
-        return true;
     }
 
-    void updateValue() {
-        if (m_valueLabel)
-            m_valueLabel->setString(
-                std::to_string(m_value).c_str()
-            );
+    return true;
+}
+
+void updateValue() {
+    if (m_valueLabel) {
+        m_valueLabel->setString(
+            std::to_string(m_value).c_str()
+        );
     }
+}
 
-    void onMinus10(CCObject*) {
-        m_value -= 10;
-        updateValue();
+void onMinus10(CCObject*) {
+    m_value -= 10;
+    updateValue();
+}
+
+void onMinus1(CCObject*) {
+    --m_value;
+    updateValue();
+}
+
+void onPlus1(CCObject*) {
+    ++m_value;
+    updateValue();
+}
+
+void onPlus10(CCObject*) {
+    m_value += 10;
+    updateValue();
+}
+
+void onCancel(CCObject* sender) {
+    onClose(sender);
+}
+
+void onEpicOnly(CCObject* sender) {
+    onClose(sender);
+}
+
+void onToggleEpicColor(CCObject*) {
+    m_epicColored = !m_epicColored;
+
+    if (m_epicToggleSprite) {
+        m_epicToggleSprite->setColor(
+            m_epicColored
+                ? ccColor3B{ 255, 255, 255 }
+                : ccColor3B{ 60, 60, 60 }
+        );
     }
+}
 
-    void onMinus1(CCObject*) {
-        --m_value;
-        updateValue();
-    }
+void onSubmit(CCObject* sender) {
+    if (m_level)
+        m_level->m_featured = m_value;
 
-    void onPlus1(CCObject*) {
-        ++m_value;
-        updateValue();
-    }
-
-    void onPlus10(CCObject*) {
-        m_value += 10;
-        updateValue();
-    }
-
-    void onCancel(CCObject* sender) {
-        onClose(sender);
-    }
-
-    void onEpicOnly(CCObject* sender) {
-        onClose(sender);
-    }
-
-    void onToggleEpicColor(CCObject*) {
-        m_epicColored = !m_epicColored;
-
-        if (m_epicToggleSprite) {
-            m_epicToggleSprite->setColor(
-                m_epicColored
-                    ? ccColor3B{255, 255, 255}
-                    : ccColor3B{60, 60, 60}
-            );
-        }
-    }
-
-    void onSubmit(CCObject* sender) {
-        if (m_level)
-            m_level->m_featured = m_value;
-
-        onClose(sender);
-    }
+    onClose(sender);
+}
 
 public:
-    static SetFeaturedPopup* create(GJGameLevel* level) {
-        auto popup = new SetFeaturedPopup();
+static SetFeaturedPopup* create(GJGameLevel* level) {
+auto popup = new SetFeaturedPopup();
 
-        if (!popup->init(level)) {
-            delete popup;
-            return nullptr;
-        }
-
-        popup->autorelease();
-        return popup;
+    if (!popup->init(level)) {
+        delete popup;
+        return nullptr;
     }
+
+    popup->autorelease();
+    return popup;
+}
+
 };
 
 class $modify(SFLevelInfoLayer, LevelInfoLayer) {
-    struct Fields {
-        GJGameLevel* level = nullptr;
-    };
+struct Fields {
+GJGameLevel* level = nullptr;
+};
 
-    bool init(GJGameLevel* level, bool challenge) {
-        if (!LevelInfoLayer::init(level, challenge))
-            return false;
+bool init(GJGameLevel* level, bool challenge) {
+    if (!LevelInfoLayer::init(level, challenge))
+        return false;
 
-        m_fields->level = level;
+    m_fields->level = level;
 
-        auto leftMenu = getChildByID("left-side-menu");
+    auto leftMenu = getChildByID("left-side-menu");
 
-        if (!leftMenu)
-            return true;
-
-        if (leftMenu->getChildByID("set-featured-button"))
-            return true;
-
-        auto starSprite =
-            CCSprite::create("sf_star_icon.png"_spr);
-
-        if (!starSprite)
-            return true;
-
-        starSprite->setScale(0.6f);
-
-        auto starButton = CCMenuItemSpriteExtra::create(
-            starSprite,
-            this,
-            menu_selector(SFLevelInfoLayer::onSetFeatured)
-        );
-
-        if (!starButton)
-            return true;
-
-        starButton->setID("set-featured-button");
-
-        leftMenu->addChild(starButton);
-        leftMenu->updateLayout();
-
+    if (!leftMenu)
         return true;
-    }
 
-    void onSetFeatured(CCObject*) {
-        auto popup = SetFeaturedPopup::create(m_fields->level);
+    if (leftMenu->getChildByID("set-featured-button"))
+        return true;
 
-        if (popup)
-            popup->show();
-    }
+    auto starSprite =
+        CCSprite::create("sf_star_icon.png"_spr);
+
+    if (!starSprite)
+        return true;
+
+    starSprite->setScale(0.6f);
+
+    auto starButton = CCMenuItemSpriteExtra::create(
+        starSprite,
+        this,
+        menu_selector(SFLevelInfoLayer::onSetFeatured)
+    );
+
+    if (!starButton)
+        return true;
+
+    starButton->setID("set-featured-button");
+
+    leftMenu->addChild(starButton);
+    leftMenu->updateLayout();
+
+    return true;
+}
+
+void onSetFeatured(CCObject*) {
+    auto popup = SetFeaturedPopup::create(m_fields->level);
+
+    if (popup)
+        popup->show();
+}
+
 };
 
 template <typename Base, typename T>
 inline bool instanceof(const T* ptr) {
-    return dynamic_cast<const Base*>(ptr) != nullptr;
+return dynamic_cast<const Base*>(ptr) != nullptr;
 }
+
+
+// Support Layer Success Message
+
+class modCheck {
+public:
+    void DelayMod(CCObject* sender) {
+        auto scene = CCDirector::get()->getRunningScene();
+
+        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+            if (instanceof<UploadActionPopup>(pObj)) {
+                auto Check = static_cast<UploadActionPopup*>(pObj);
+                }
+                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
+                    Check->showSuccessMessage("Success! Developer access granted.");
+                }
+            }
+        }
+    }
 
 // Rating Submitted! Fake Message
 
