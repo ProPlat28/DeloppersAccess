@@ -507,41 +507,6 @@ class $modify(RSLHook, RateStarsLayer) {
         return nullptr;
     }
 
-    static CCLabelBMFont* findLabelWithText(CCNode* node, const std::string& text) {
-        auto children = node->getChildren();
-        if (!children) return nullptr;
-
-        for (auto child : CCArrayExt<CCObject*>(children)) {
-            auto childNode = static_cast<CCNode*>(child);
-            if (auto label = typeinfo_cast<CCLabelBMFont*>(childNode)) {
-                if (label->getString() && std::string(label->getString()) == text) {
-                    return label;
-                }
-            }
-        }
-        for (auto child : CCArrayExt<CCObject*>(children)) {
-            auto childNode = static_cast<CCNode*>(child);
-            if (auto found = findLabelWithText(childNode, text)) {
-                return found;
-            }
-        }
-        return nullptr;
-    }
-
-    static CCMenuItem* findZeroButton(CCNode* root) {
-        auto label = findLabelWithText(root, "0");
-        if (!label) return nullptr;
-
-        CCNode* p = label->getParent();
-        while (p) {
-            if (auto item = typeinfo_cast<CCMenuItem*>(p)) {
-                return item;
-            }
-            p = p->getParent();
-        }
-        return nullptr;
-    }
-
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
@@ -581,13 +546,6 @@ class $modify(RSLHook, RateStarsLayer) {
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        auto searchRoot = CCDirector::sharedDirector()->getRunningScene();
-        if (auto zeroBtn = findZeroButton(searchRoot)) {
-            auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
-            auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
-            zeroBtn->setPosition(localPos);
-        }
-
         return true;
     }
 
@@ -599,6 +557,8 @@ class $modify(RSLHook, RateStarsLayer) {
                 ? ccColor3B{255, 255, 255}
                 : ccColor3B{150, 150, 150}
         );
+
+        this->onClose(nullptr);
     }
 
     void onRate(CCObject* sender) {
