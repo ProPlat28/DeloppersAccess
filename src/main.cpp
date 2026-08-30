@@ -334,21 +334,21 @@ inline bool instanceof(const T* ptr) {
 
 // Support Layer Success Message
 
-class modCheck {
+class modCheck : public CCObject {
 public:
-    void DelayMod(CCObject* sender) {
+    void DelayRate(CCObject* sender) {
         auto scene = CCDirector::get()->getRunningScene();
 
-        for (auto pObj : CCArrayExt<CCObject*>(static_cast<CCScene*>(scene)->getChildren())) {
+        for (auto pObj : CCArrayExt<CCObject*>(
+            static_cast<CCScene*>(scene)->getChildren()
+        )) {
             if (instanceof<UploadActionPopup>(pObj)) {
                 auto Check = static_cast<UploadActionPopup*>(pObj);
-                }
-                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage("Success! Developer access granted.");
-                }
+                Check->showSuccessMessage("Success! Developer access granted.");
             }
         }
     }
+};
 
 // Rating Submitted! Fake Message
 
