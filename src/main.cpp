@@ -184,7 +184,7 @@ protected:
 
         auto epicToggleSprite =
             CCSprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
-        epicToggleSprite->setScale(1.2f);
+        epicToggleSprite->setScale(0.8f);
         epicToggleSprite->setColor({60, 60, 60});
 
         auto epicToggleButton = CCMenuItemSpriteExtra::create(
@@ -192,7 +192,9 @@ protected:
             this,
             menu_selector(SetFeaturedPopup::onToggleEpicColor)
         );
-        epicToggleButton->setContentSize(epicToggleSprite->getContentSize());
+        auto epicSize = epicToggleSprite->getContentSize();
+        epicToggleButton->setContentSize(epicSize);
+        epicToggleSprite->setPosition({ epicSize.width / 2.f, epicSize.height / 2.f });
 
         auto epicToggleMenu = CCMenu::create();
         epicToggleMenu->addChild(epicToggleButton);
@@ -329,28 +331,6 @@ template <typename Base, typename T>
 inline bool instanceof(const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
-
-// Support Layer Success Message
-
-class modCheck : public CCObject {
-public:
-    void DelayMod(CCObject* sender) {
-        auto scene = CCDirector::get()->getRunningScene();
-
-        for (auto pObj : CCArrayExt<CCObject*>(
-            static_cast<CCScene*>(scene)->getChildren()
-        )) {
-            if (instanceof<UploadActionPopup>(pObj)) {
-                auto Check = static_cast<UploadActionPopup*>(pObj);
-
-                if (Mod::get()->getSettingValue<int64_t>("modType") == 2) {
-                    Check->showSuccessMessage(
-                        "Success! Developer access granted."
-                    );
-                }
-            }
-        }
-    }
 
 // Rating Submitted! Fake Message
 
