@@ -520,6 +520,11 @@ class $modify(RSLHook, RateStarsLayer) {
     }
     static CCScale9Sprite* findPanelBg(CCNode* node) {
         auto children = node->getChildren();
+        if (!children) return nullptr;
+
+        for (auto child : CCArrayExt<CCObject*>(children)) {
+            auto childNode = static_cast<CCNode*>(child);
+            if (auto s9 = typeinfo_cast<CCScale9Sprite*>(childNode)) {
                 return s9;
             }
         }
@@ -574,6 +579,8 @@ class $modify(RSLHook, RateStarsLayer) {
         dumpTree(this);
         log::info("RSLHook: ---- end dump ----");
 
+        // Also show it directly on screen, since console/log access hasn't
+        // been working out -- this way it shows up in a screenshot instead.
         std::string debugText;
         dumpTreeToString(this, 0, debugText, 3);
         if (debugText.size() > 700) {
@@ -607,7 +614,7 @@ class $modify(RSLHook, RateStarsLayer) {
 
         auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
         coinSprite->setScale(1.6f);
-        coinSprite->setColor({150, 150, 150});
+        coinSprite->setColor({150, 150, 150}); // gray tint until clicked
 
         auto coinBtn = CCMenuItemSpriteExtra::create(
             coinSprite,
@@ -615,7 +622,7 @@ class $modify(RSLHook, RateStarsLayer) {
             menu_selector(RSLHook::onToggleDevCoin)
         );
 
-        auto coinSize = coinSprite->getContentSize();
+        auto coinSize = coinSprite->getContentSize(); // unscaled logical size
         coinBtn->setContentSize(coinSize);
 
         coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
