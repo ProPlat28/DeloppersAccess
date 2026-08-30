@@ -479,6 +479,7 @@ class $modify(CongratsMenuLayer, MenuLayer) {
 };
 
 // Developer's Rate Stars Layer
+
 class $modify(RSLHook, RateStarsLayer) {
 
     struct Fields {
@@ -509,54 +510,56 @@ class $modify(RSLHook, RateStarsLayer) {
     bool init(int levelID, bool platformer, bool moderator) {
         if (!RateStarsLayer::init(levelID, platformer, moderator)) return false;
 
-        auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
-        for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
-            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
-                label->setString("DEV: Set Stars");
-                break;
+        if (!moderator) {
+            auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+            for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
+                if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
+                    label->setString("DEV: Set Stars");
+                    break;
+                }
             }
+
+            auto panelBg = findPanelBg(this);
+            auto attachTarget = panelBg ? static_cast<CCNode*>(panelBg) : static_cast<CCNode*>(root);
+            auto targetSize = attachTarget->getContentSize();
+
+            auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
+            coinSprite->setScale(1.6f);
+            coinSprite->setColor({150, 150, 150});
+
+            auto coinBtn = CCMenuItemSpriteExtra::create(
+                coinSprite,
+                this,
+                menu_selector(RSLHook::onToggleDevCoin)
+            );
+
+            auto coinSize = coinSprite->getContentSize();
+            coinBtn->setContentSize(coinSize);
+            coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
+            coinBtn->setPosition({0.f, targetSize.height});
+
+            auto coinMenu = CCMenu::create();
+            coinMenu->addChild(coinBtn);
+            coinMenu->setPosition({0.f, 0.f});
+            coinMenu->setZOrder(100);
+            attachTarget->addChild(coinMenu, 100);
+
+            m_fields->m_coinBtn = coinBtn;
+            m_fields->m_coinSprite = coinSprite;
+
+            auto zeroSprite = ButtonSprite::create("0", 36, false, "bigFont.fnt", "GJ_button_04.png", 30.f, 0.5f);
+            zeroSprite->getLabel()->setScale(0.7f);
+
+            auto zeroBtn = CCMenuItemSpriteExtra::create(
+                zeroSprite,
+                this,
+                menu_selector(RSLHook::onDevZeroClicked)
+            );
+            zeroBtn->setContentSize({30.f, 36.f});
+            zeroBtn->setPosition({targetSize.width, targetSize.height});
+
+            coinMenu->addChild(zeroBtn);
         }
-
-        auto panelBg = findPanelBg(this);
-        auto attachTarget = panelBg ? static_cast<CCNode*>(panelBg) : static_cast<CCNode*>(root);
-        auto targetSize = attachTarget->getContentSize();
-
-        auto coinSprite = CCSprite::createWithSpriteFrameName("GJ_coinsIcon2_001.png");
-        coinSprite->setScale(1.6f);
-        coinSprite->setColor({150, 150, 150});
-
-        auto coinBtn = CCMenuItemSpriteExtra::create(
-            coinSprite,
-            this,
-            menu_selector(RSLHook::onToggleDevCoin)
-        );
-
-        auto coinSize = coinSprite->getContentSize();
-        coinBtn->setContentSize(coinSize);
-        coinSprite->setPosition({coinSize.width / 2.f, coinSize.height / 2.f});
-        coinBtn->setPosition({0.f, targetSize.height});
-
-        auto coinMenu = CCMenu::create();
-        coinMenu->addChild(coinBtn);
-        coinMenu->setPosition({0.f, 0.f});
-        coinMenu->setZOrder(100);
-        attachTarget->addChild(coinMenu, 100);
-
-        m_fields->m_coinBtn = coinBtn;
-        m_fields->m_coinSprite = coinSprite;
-
-        auto zeroSprite = ButtonSprite::create("0", 36, false, "bigFont.fnt", "GJ_button_04.png", 30.f, 1.f);
-        zeroSprite->getLabel()->setScale(0.5f);
-
-        auto zeroBtn = CCMenuItemSpriteExtra::create(
-            zeroSprite,
-            this,
-            menu_selector(RSLHook::onDevZeroClicked)
-        );
-        zeroBtn->setContentSize({30.f, 36.f});
-        zeroBtn->setPosition({targetSize.width, targetSize.height});
-
-        coinMenu->addChild(zeroBtn);
 
         return true;
     }
