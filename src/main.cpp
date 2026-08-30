@@ -518,12 +518,8 @@ class $modify(RSLHook, RateStarsLayer) {
             dumpTreeToString(static_cast<CCNode*>(child), depth + 1, out, maxDepth);
         }
     }
+    static CCScale9Sprite* findPanelBg(CCNode* node) {
         auto children = node->getChildren();
-        if (!children) return nullptr;
-
-        for (auto child : CCArrayExt<CCObject*>(children)) {
-            auto childNode = static_cast<CCNode*>(child);
-            if (auto s9 = typeinfo_cast<CCScale9Sprite*>(childNode)) {
                 return s9;
             }
         }
