@@ -184,7 +184,7 @@ protected:
 
         auto epicToggleSprite =
             CCSprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
-        epicToggleSprite->setScale(0.8f);
+        epicToggleSprite->setScale(1f);
         epicToggleSprite->setColor({60, 60, 60});
 
         auto epicToggleButton = CCMenuItemSpriteExtra::create(
