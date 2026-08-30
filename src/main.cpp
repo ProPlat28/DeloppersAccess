@@ -184,7 +184,7 @@ protected:
 
         auto epicToggleSprite =
             CCSprite::createWithSpriteFrameName("GJ_epicCoin_001.png");
-        epicToggleSprite->setScale(0.8f);
+        epicToggleSprite->setScale(1.2f);
         epicToggleSprite->setColor({60, 60, 60});
 
         auto epicToggleButton = CCMenuItemSpriteExtra::create(
@@ -192,13 +192,14 @@ protected:
             this,
             menu_selector(SetFeaturedPopup::onToggleEpicColor)
         );
+        epicToggleButton->setContentSize(epicToggleSprite->getContentSize());
 
         auto epicToggleMenu = CCMenu::create();
         epicToggleMenu->addChild(epicToggleButton);
         epicToggleMenu->setPosition({ 0.f, 0.f });
         m_mainLayer->addChild(epicToggleMenu);
 
-        epicToggleButton->setPosition({ 22.f, 160.f });
+        epicToggleButton->setPosition({ 0.f, 180.f });
         m_epicToggleSprite = epicToggleSprite;
 
         return true;
