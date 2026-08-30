@@ -581,7 +581,8 @@ class $modify(RSLHook, RateStarsLayer) {
         m_fields->m_coinBtn = coinBtn;
         m_fields->m_coinSprite = coinSprite;
 
-        if (auto zeroBtn = findZeroButton(this)) {
+        auto searchRoot = CCDirector::sharedDirector()->getRunningScene();
+        if (auto zeroBtn = findZeroButton(searchRoot)) {
             auto cornerWorldPos = attachTarget->convertToWorldSpace({targetSize.width, targetSize.height});
             auto localPos = zeroBtn->getParent()->convertToNodeSpace(cornerWorldPos);
             zeroBtn->setPosition(localPos);
