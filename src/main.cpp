@@ -622,39 +622,3 @@ class $modify(RSLHook, RateStarsLayer) {
         ));
     }
 };
-
-class $modify(LILHook, LevelInfoLayer) {
-
-    static void dumpShallow(CCNode* node, int depth, std::string& out, int maxDepth) {
-        if (!node || depth > maxDepth) return;
-        for (int i = 0; i < depth; i++) out += " ";
-        out += typeid(*node).name();
-        out += " (" + std::to_string((int)node->getPosition().x)
-             + "," + std::to_string((int)node->getPosition().y) + ")\n";
-
-        auto children = node->getChildren();
-        if (!children) return;
-        for (auto child : CCArrayExt<CCObject*>(children)) {
-            dumpShallow(static_cast<CCNode*>(child), depth + 1, out, maxDepth);
-        }
-    }
-
-    bool init(GJGameLevel* level, bool challenge) {
-        if (!LevelInfoLayer::init(level, challenge)) return false;
-
-        std::string debugText;
-        dumpShallow(this, 0, debugText, 3);
-        if (debugText.size() > 1400) {
-            debugText = debugText.substr(0, 1400) + "\n...(truncated)";
-        }
-        auto debugLabel = CCLabelBMFont::create(debugText.c_str(), "chatFont.fnt");
-        debugLabel->setAnchorPoint({0.f, 1.f});
-        debugLabel->setScale(0.24f);
-        auto winSize = CCDirector::sharedDirector()->getWinSize();
-        debugLabel->setPosition({4.f, winSize.height - 4.f});
-        debugLabel->setZOrder(9999);
-        this->addChild(debugLabel, 9999);
-
-        return true;
-    }
-};
