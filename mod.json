@@ -6,7 +6,7 @@
         "android": "2.2081",
         "ios": "2.2081"
     },
-    "version": "v1.0.0-beta.1",
+    "version": "v1.0.0-beta.3",
     "id": "proplat.developers-access",
     "name": "Developer's Access",
     "developer": "ProPlat",
@@ -23,9 +23,7 @@
 	},
     "resources": {
         "sprites": [
-            "resources/sf_star_icon.png",
-            "resources/sf_fire_icon.png",
-			"resources/grey-user-coin.png"
-        ]
+            "resources/sf_star_icon.png"	
+		]
     }
 }
