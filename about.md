@@ -4,7 +4,7 @@ The mod recreates the RobTop access! (Cosmetic Only) NOTE: Not everything will b
 
 What the mod includes:
 
-- RobTop's Rate Stars Layer (Coming Soon)
+- RobTop's Rate Stars Layer
 - RobTop's Set Featured button
 - RobTop's Noclip Mode (Coming Soon)
 - RobTop's Speedhack (Coming Soon)
