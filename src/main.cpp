@@ -193,7 +193,7 @@ protected:
             menu_selector(SetFeaturedPopup::onToggleEpicColor)
         );
         auto epicSize = epicToggleSprite->getContentSize();
-        CCSize epicHitboxSize = { epicSize.width * 0.6f, epicSize.height * 0.6f };
+        CCSize epicHitboxSize = { epicSize.width * 0.65f, epicSize.height * 0.65f };
         epicToggleButton->setContentSize(epicHitboxSize);
         epicToggleSprite->setPosition({ epicHitboxSize.width / 2.f, epicHitboxSize.height / 2.f });
 
