@@ -433,7 +433,42 @@ class $modify(RateStarsLayer) {
     }
 };
 
-// Moderator's Rate Demon Layer
+// Developer's Rate Demon Layer
+
+class $modify(RDLHook, RateDemonLayer) {
+
+    bool init(GJGameLevel* level) {
+        if (!RateDemonLayer::init(level)) return false;
+
+        auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
+
+        for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
+            if (auto label = typeinfo_cast<CCLabelBMFont*>(child)) {
+                label->setString("DEV: Set Demon");
+                break;
+            }
+        }
+
+        for (auto child : CCArrayExt<CCObject*>(root->getChildren())) {
+            if (auto sprite = typeinfo_cast<CCSprite*>(child)) {
+                auto pos = sprite->getPosition();
+                auto scale = sprite->getScale();
+                auto zOrder = sprite->getZOrder();
+
+                auto newIcon = CCSprite::create("sf-demon-icon.png"_spr);
+                if (newIcon) {
+                    newIcon->setPosition(pos);
+                    newIcon->setScale(scale);
+                    root->addChild(newIcon, zOrder);
+                    sprite->setVisible(false);
+                }
+                break;
+            }
+        }
+
+        return true;
+    }
+};
 
 class $modify(RateDemonLayer) {
     void onRate(CCObject* sender) {
