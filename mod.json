@@ -14,7 +14,7 @@
     "settings": {
 		"modType": {
 			"name": "",
-			"description": "Something",
+			"description": "",
 			"type": "int",
 			"default": 2,
 			"min": 2,
@@ -23,7 +23,8 @@
 	},
     "resources": {
         "sprites": [
-            "resources/sf_star_icon.png"	
+            "resources/sf_star_icon.png",
+			"resources/sf-demon-icon.png"
 		]
     }
 }
