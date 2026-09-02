@@ -437,8 +437,8 @@ class $modify(RateStarsLayer) {
 
 class $modify(RDLHook, RateDemonLayer) {
 
-    bool init(GJGameLevel* level) {
-        if (!RateDemonLayer::init(level)) return false;
+    bool init(int levelID) {
+        if (!RateDemonLayer::init(levelID)) return false;
 
         auto root = static_cast<CCLayer*>(this->getChildren()->objectAtIndex(0));
 
